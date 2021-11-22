@@ -1,10 +1,22 @@
 import React from 'react'
+import Modal from 'react-modal'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import { AppProvider } from './hooks'
+import { Routes } from './routes'
+import GlobalStyle from './styles/global'
 
 function App() {
+    Modal.setAppElement('#root')
+
     return (
-        <div className="App">
-            <h1>hello world</h1>
-        </div>
+        <AppProvider>
+            <Router>
+                <Routes />
+                <ToastContainer />
+            </Router>
+            <GlobalStyle />
+        </AppProvider>
     )
 }
 
