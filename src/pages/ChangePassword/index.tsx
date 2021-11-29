@@ -1,47 +1,58 @@
 import React, { useRef, useState } from 'react'
 import * as Yup from 'yup'
 import { Form } from '@unform/web'
-import { CgProfile } from 'react-icons/cg'
+import { CgLock } from 'react-icons/cg'
 import { Link, useHistory } from 'react-router-dom'
 import { FormHandles } from '@unform/core'
 import { toast } from 'react-toastify'
+import qs from 'qs'
 import { AuthContainer } from '../../container/AuthContainer'
-import { ForgotPasswordContent } from './styles'
-import forgotPassword from '../../assets/forgot-password.svg'
+import { ChangePasswordContent } from './styles'
 import { Button } from '../../components/Button'
 import { Input } from '../../unformInputs/Input'
+import { LoginDto } from '../../dtos/login'
 import { getValidationErrors } from '../../utils/getValidationErrors'
 import { RoutesName } from '../../routes'
+import ChangePasswordImg from '../../assets/change-password.svg'
 import { useUser } from '../../hooks/use-user'
 
-export function ForgotPasswordPage() {
+export function ChangePasswordPage() {
     // refs
     const formRef = useRef<FormHandles>(null)
-    // hooks
-    const { requestPasswordReset } = useUser()
     // state
     const [loadingBtn, setLoadingBtn] = useState(false)
+    // hooks
+    const { ChangePassword } = useUser()
+    // params
+    const params = window.location.search.split('?')[1]
 
     const history = useHistory()
 
-    async function handleForgotPassword(data: { email: string }) {
+    const { token }: { token: string } = qs.parse(params) as unknown as {
+        token: string
+    }
+
+    async function handleChangePassword(data: LoginDto) {
         setLoadingBtn(true)
         try {
             formRef.current?.setErrors({})
             const schema = Yup.object().shape({
-                email: Yup.string().required('E-mail obrigatório'),
+                password: Yup.string().required('Senha obrigatória '),
             })
             await schema.validate(data, {
                 abortEarly: false,
             })
-            const response = await requestPasswordReset(data.email)
+            const response = await ChangePassword({
+                password: data.password,
+                token,
+            })
             if (response === 204) {
-                history.push(RoutesName.emailSent)
                 setLoadingBtn(false)
+                history.push(RoutesName.passwordChanged)
             }
             if (response !== 200) {
                 if (!response) {
-                    toast.error('E-mail não existe')
+                    toast.error('E-mail ou senha incorretos')
                     setLoadingBtn(false)
                 }
                 setLoadingBtn(false)
@@ -49,7 +60,6 @@ export function ForgotPasswordPage() {
         } catch (error) {
             toast.info('Verifique se você preencheu o campo')
             setLoadingBtn(false)
-            console.log(error)
             if (error instanceof Yup.ValidationError) {
                 const errors = getValidationErrors(error)
                 formRef.current?.setErrors(errors)
@@ -58,14 +68,25 @@ export function ForgotPasswordPage() {
     }
 
     return (
-        <AuthContainer image={forgotPassword}>
-            <ForgotPasswordContent>
+        <AuthContainer image={ChangePasswordImg}>
+            <ChangePasswordContent>
                 <h1 className="f16-400-light-gray insert-email">
-                    Insira o seu e-mail de acesso no sistema.
+                    Recuperação de senha.
                 </h1>
-                <Form ref={formRef} onSubmit={handleForgotPassword}>
-                    <Input icon={CgProfile} label="E-mail" name="email" />
+                <Form ref={formRef} onSubmit={handleChangePassword}>
+                    <Input
+                        icon={CgLock}
+                        label="Digite a nova senha"
+                        name="password"
+                        isPassword
+                    />
                     <div className="margin-bottom" />
+                    <Input
+                        icon={CgLock}
+                        label="Confirme a nova senha"
+                        name="newPassword"
+                        isPassword
+                    />
                     <div className="action-btns-container">
                         <div className="action-btns">
                             <Link to={RoutesName.login}>
@@ -87,7 +108,7 @@ export function ForgotPasswordPage() {
                         </div>
                     </div>
                 </Form>
-            </ForgotPasswordContent>
+            </ChangePasswordContent>
         </AuthContainer>
     )
 }

@@ -17,7 +17,7 @@ const AuthContext = createContext({} as AuthContext)
 export function AuthProvider({ children }: Props) {
     // State
     const [token, setToken] = useState<string | undefined>(() => {
-        return localStorage.getItem('@ada:token') || undefined
+        return localStorage.getItem('@sttigma:token') || undefined
     })
 
     async function login(data: LoginDto) {
@@ -30,8 +30,9 @@ export function AuthProvider({ children }: Props) {
                 '/users/auth',
                 signupData
             )
-            localStorage.setItem('@ada:token', response.data.token)
+            localStorage.setItem('@sttigma:token', response.data.token)
             setToken(response.data.token)
+            console.log(response.data)
             return response.status
         } catch (error) {
             return undefined

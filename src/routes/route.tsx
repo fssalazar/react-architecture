@@ -5,6 +5,7 @@ import {
     Redirect,
 } from 'react-router-dom'
 import { useAuth } from '../hooks/use-auth'
+import { useUser } from '../hooks/use-user'
 
 interface ReactProps extends ReactDOMRouterProps {
     isPrivate: boolean
@@ -17,16 +18,15 @@ export function Route({
     ...rest
 }: ReactProps) {
     // hooks
-    // const { token } = useAuth()
+    const { token } = useAuth()
+    const { getUser } = useUser()
     // state
     const [loading, setLoading] = useState<boolean>(false)
-
-    const token = undefined
 
     useEffect(() => {
         setLoading(true)
         ;(async () => {
-            //  await getUser()
+            await getUser()
             setLoading(false)
         })()
     }, [token])

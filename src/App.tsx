@@ -5,6 +5,7 @@ import { ToastContainer } from 'react-toastify'
 import { AppProvider } from './hooks'
 import { Routes } from './routes'
 import GlobalStyle from './styles/global'
+import 'react-toastify/dist/ReactToastify.min.css'
 
 function App() {
     Modal.setAppElement('#root')

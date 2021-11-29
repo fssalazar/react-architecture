@@ -12,17 +12,19 @@ export default createGlobalStyle`
 
 
   :root{
-      --color-dark: #191B1E;
+      --color-dark: #1D1929;
       --color-light: #fff;
       --color-table: #F6F7F8;
       --color-gray: #646669;
       --color-success: #3BB90A;
       --color-warning: #E8604A;
       --color-secondary-gray: #96989B;
-      --color-light-gray: #C8CACD;
+      --color-light-gray: #F9F9F9;
       --color-error: #E1173F;
-      --color-background: #EDEFF2;
-      --color-primary: #E74B70;
+      --color-background: #F9F9F9;
+      --color-primary: #809EFF;
+      --color-secondary: #3363FF;
+      --color-primary-dark: #34303E;
   }
 
   html {
@@ -53,8 +55,8 @@ export default createGlobalStyle`
     background-color: var(--color-background);
   }
 
-  body, input, button, h1, h2, h3, h4, p, tr, th{
-    font-family: Lato, sans-serif;
+  body, input, button, h1, h2, h3, h4, p, tr, th, a, span{
+    font-family: Nunito Sans, sans-serif;
     color: #000;
     line-height: 1.5;
     font-size: 1.6rem;
@@ -91,15 +93,36 @@ export default createGlobalStyle`
     text-align: left;
     opacity: 0.5;
   }
-  .f32-700-dark {
-    color: var(--color-dark);
-    font-size: 3.2rem;
-    font-weight: 700;
-  }
+
   .f14-500-gray {
     color: var(--color-gray);
     font-size: 1.4rem;
     font-weight: 500;
+  }
+  .f14-700-dark {
+    color: var(--color-dark);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .f14-700-light {
+    color: var(--color-light);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .f12-500-gray {
+    color: var(--color-gray);
+    font-size: 1.4rem;
+    font-weight: 500;
+  }
+  .f24-700-primary-gray {
+    color: var(--color-primary-gray);
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
+  .f16-400-primary-gray {
+    color: var(--color-primary-gray);
+    font-size: 1.6rem;
+    font-weight: 400;
   }
   .f22-700-dark {
     color: var(--color-dark);
@@ -121,6 +144,12 @@ export default createGlobalStyle`
     font-size: 1.6rem;
     font-weight: 500;
   }
+  .f16-400-light-gray {
+    color: var(--color-light-gray);
+    font-size: 1.6rem;
+    font-weight: 400;
+  }
+
   .f16-500-green {
     color: var(--color-success);
     font-size: 1.6rem;
@@ -232,47 +261,16 @@ export default createGlobalStyle`
     }
 
  }
+ 
   .react-modal-content {
     position: relative;
     padding: 6.6rem 3.8rem 3.8rem 3.8rem;
-    border-radius: 8px;
-    background-color: var(--color-table);
+    border-radius: 2.4rem;
+    background-color: var(--color-light);
     outline: none;
-    width: 64rem;
+    width: 73rem;
     min-height: 78.2rem;
-    .modal-content,
-    .modal-header{
-      width: 100%;
-      background-color: var(--color-light);
-      padding: 4rem 3rem 3rem 3rem;
-      border-radius: 8px;
-      box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.15);
-      &-title {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        svg {
-          height: 2rem;
-          width: 2rem;
-          margin-right: 2rem;
-        }
-      }
-      &-description {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-top: 0.8rem;
-        &--blank {
-          height: 2rem;
-          width: 2rem;
-          margin-right: 2rem;
-        }
-      }
-    }
-    .modal-content {
-      margin-top: 2rem;
-      padding: 1.5rem;
-    }
+    box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.08), 0px 4px 56px rgba(0, 0, 0, 0.08);
     .close {
         position: absolute;
         top: 1rem;
@@ -287,17 +285,6 @@ export default createGlobalStyle`
         &:hover {
             transform: rotate(180deg) scale(1.2);
         }
-    }
-    .title {
-      margin-bottom: 2rem;
-    }
-    .modal-confirm-btn {
-      position: absolute;
-      bottom: 3rem;
-      left: 50%;
-      transform: translateX(-50%);
-        width: 20rem;
-        margin-top: 3rem;
     }
 }
 

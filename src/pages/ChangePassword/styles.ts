@@ -1,11 +1,14 @@
 import styled from 'styled-components'
 
-export const ForgotPasswordContent = styled.div`
+export const ChangePasswordContent = styled.div`
     .insert-email {
         text-align: center;
         margin-bottom: 1rem;
     }
     form {
+        .margin-bottom {
+            margin-bottom: 1rem;
+        }
         .action-btns-container {
             display: flex;
             align-items: center;
