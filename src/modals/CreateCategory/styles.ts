@@ -38,6 +38,39 @@ export const CreateCategoryContent = styled.div`
         }
     }
     .build-category {
+        .choose-boxes {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            .select {
+                width: 25rem;
+                margin-top: 3rem;
+            }
+        }
+        .category-container {
+            max-height: 55rem;
+            overflow-y: scroll;
+            &::-webkit-scrollbar {
+                width: 0.5rem;
+            }
+
+            /* Track */
+            &::-webkit-scrollbar-track {
+                border-radius: 0.5rem;
+                background: #edeff2;
+            }
+
+            /* Handle */
+            &::-webkit-scrollbar-thumb {
+                border-radius: 0.5rem;
+                background: #96989b;
+            }
+
+            /* Handle on hover */
+            &::-webkit-scrollbar-thumb:hover {
+                background: #96989b;
+            }
+        }
         .category-box {
             width: 100%;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08),
@@ -70,11 +103,21 @@ export const CreateCategoryContent = styled.div`
                     grid-template-columns: 3fr 2fr 1fr 1fr;
                 }
                 .category-form {
+                    position: relative;
                     display: grid;
                     grid-template-columns: 3fr 2fr 1fr 1fr;
                     align-items: center;
                     grid-gap: 1rem;
                     margin-bottom: 1rem;
+                    .delete-counter {
+                        position: absolute;
+                        right: -2rem;
+                        border: none;
+                        background-color: inherit;
+                        color: var(--color-warning);
+                        width: 2.5rem;
+                        height: 2.5rem;
+                    }
                     .type-input {
                         display: flex;
                         align-items: center;
@@ -86,6 +129,16 @@ export const CreateCategoryContent = styled.div`
                                 cursor: pointer;
                             }
                         }
+                    }
+                }
+                .add-counter-btn {
+                    text-align: right;
+                    button {
+                        border: none;
+                        background-color: inherit;
+                        color: var(--color-primary);
+                        font-weight: 700;
+                        margin-top: 1rem;
                     }
                 }
             }
@@ -102,5 +155,77 @@ export const CreateCategoryContent = styled.div`
     }
     .category-config {
         text-align: center;
+        margin-top: 4.4rem;
+        .action-config {
+            margin: 2.2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .config-label {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.4rem;
+                font-weight: 700;
+                color: var(--color-primary-dark);
+                opacity: 0.8;
+                &:hover {
+                    cursor: pointer;
+                }
+                input {
+                    margin: 0 1rem;
+                    height: 2rem;
+                    width: 2rem;
+                    border-radius: 0.8rem;
+                }
+            }
+        }
+        .action-btns {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 9rem;
+            button {
+                width: 10rem;
+            }
+        }
+    }
+    .category-name {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        h1 {
+            margin-bottom: 2.4rem;
+        }
+        .action-btns {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 9rem;
+            button {
+                width: 10rem;
+            }
+        }
+    }
+    .category-finished {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        .check {
+            margin-bottom: 3rem;
+        }
+        .action-btns {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 9rem;
+            button {
+                width: 10rem;
+            }
+        }
     }
 `

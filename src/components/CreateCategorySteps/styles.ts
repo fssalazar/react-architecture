@@ -46,6 +46,19 @@ export const CreateCategoryStepsContainer = styled.div`
                     color: var(--color-secondary);
                 }
             }
+            .passed {
+                .divider {
+                    background: #003cff;
+                }
+                .step-number {
+                    background: #003cff;
+                    color: var(--color-light);
+                    svg {
+                        height: 2rem;
+                        width: 2rem;
+                    }
+                }
+            }
         }
     }
     .sub-title {

@@ -119,6 +119,11 @@ export default createGlobalStyle`
     font-size: 2.4rem;
     font-weight: 700;
   }
+  .f24-700-primary-dark {
+    color: var(--color-primary-dark);
+    font-size: 2.4rem;
+    font-weight: 700;
+  }
   .f16-400-primary-gray {
     color: var(--color-primary-gray);
     font-size: 1.6rem;
@@ -172,6 +177,11 @@ export default createGlobalStyle`
   }
   .f16-700-dark {
     color: var(--color-dark);
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .f16-700-primary-dark {
+    color: var(--color-primary-dark);
     font-size: 1.6rem;
     font-weight: 700;
   }
@@ -269,8 +279,10 @@ export default createGlobalStyle`
     background-color: var(--color-light);
     outline: none;
     width: 73rem;
-    min-height: 78.2rem;
+    min-height: 28.2rem;
+    max-height: 87rem;
     box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.08), 0px 4px 56px rgba(0, 0, 0, 0.08);
+    
     .close {
         position: absolute;
         top: 1rem;
