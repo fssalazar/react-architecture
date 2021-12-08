@@ -1,14 +1,15 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react'
 import { api } from '../service/api'
-import { ChangePasswordDto } from '../dtos/changePassword'
 import { useAuth } from './use-auth'
-import { CounterType } from '../entities/category'
+import { Category, CounterType } from '../entities/category'
 import { CreateCategoryDto } from '../dtos/createCategory'
 
 interface CategoryContext {
     getCounterTypes(): Promise<CounterType[] | undefined>
     createCategory(data: CreateCategoryDto): Promise<void | undefined>
+    getCategories(): Promise<Category[] | undefined>
     counterTypes: CounterType[]
+    categories: Category[]
 }
 
 interface Props {
@@ -22,6 +23,7 @@ export function CategoryProvider({ children }: Props) {
     const { token } = useAuth()
     // State
     const [counterTypes, setCounterTypes] = useState<CounterType[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
 
     async function getCounterTypes() {
         try {
@@ -46,7 +48,23 @@ export function CategoryProvider({ children }: Props) {
                     authorization: `Bearer ${token}`,
                 },
             })
+            return response.data
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function getCategories() {
+        try {
+            const response = await api.get('categories', {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setCategories(response.data)
             console.log(response.data)
+
             return response.data
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')
@@ -56,7 +74,13 @@ export function CategoryProvider({ children }: Props) {
 
     return (
         <CategoryContext.Provider
-            value={{ counterTypes, getCounterTypes, createCategory }}
+            value={{
+                counterTypes,
+                categories,
+                getCounterTypes,
+                createCategory,
+                getCategories,
+            }}
         >
             {children}
         </CategoryContext.Provider>

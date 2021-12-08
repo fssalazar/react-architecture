@@ -1,6 +1,7 @@
 /* eslint-disable no-constant-condition */
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FiCheck } from 'react-icons/fi'
+import { useCategory } from '../../hooks/useCategory'
 import { CreateCategoryStepsContainer } from './styles'
 
 interface Props {

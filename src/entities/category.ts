@@ -1,14 +1,14 @@
 export interface CounterType {
-    id: string
+    id?: string
     label: string
     type: string
 }
 
 export interface Counter {
-    type: CounterType
     pin: number
     isDigital: boolean
     isMechanical: boolean
+    counterType: CounterType
 }
 
 export interface Box {
