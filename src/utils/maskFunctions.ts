@@ -33,6 +33,14 @@ export function phoneFormatter(
         .replace(/(-\d{4})\d+?$/, '$1')
     return formattedString
 }
+export function formatCep(value: string) {
+    const formattedString = value.replace(/(\d{5})(\d)/, '$1-$2')
+    return formattedString
+}
+export function unFormatCep(value: string) {
+    const result = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    return result
+}
 
 export function cpfFormatter(
     cpf: string,

@@ -8,7 +8,9 @@ export interface Counter {
     pin: number
     isDigital: boolean
     isMechanical: boolean
-    counterType: CounterType
+    counterType?: CounterType
+    counterTypeId?: string
+    id?: string
 }
 
 export interface Box {

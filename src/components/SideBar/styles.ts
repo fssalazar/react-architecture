@@ -26,6 +26,9 @@ export const SideBarContainer = styled.nav`
         flex-direction: column;
         align-items: flex-start;
         justify-content: space-between;
+        a {
+            text-decoration: none;
+        }
         .nav-item {
             display: flex;
             align-items: center;
@@ -36,6 +39,7 @@ export const SideBarContainer = styled.nav`
             border-radius: 1.6rem;
             background-color: inherit;
             transition: all 0.4s ease;
+
             .tab-name {
                 font-size: 1.4rem;
                 color: #34303e;
@@ -80,6 +84,7 @@ export const SideBarContainer = styled.nav`
             border-radius: 1.6rem;
             background-color: inherit;
             transition: all 0.4s ease;
+
             .tab-name {
                 font-size: 1.4rem;
                 color: #34303e;

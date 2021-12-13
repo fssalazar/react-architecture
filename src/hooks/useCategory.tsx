@@ -1,13 +1,16 @@
+/* eslint-disable no-param-reassign */
 import React, { createContext, useContext, ReactNode, useState } from 'react'
 import { api } from '../service/api'
 import { useAuth } from './use-auth'
-import { Category, CounterType } from '../entities/category'
+import { Box, Category, CounterType } from '../entities/category'
 import { CreateCategoryDto } from '../dtos/createCategory'
 
 interface CategoryContext {
     getCounterTypes(): Promise<CounterType[] | undefined>
     createCategory(data: CreateCategoryDto): Promise<void | undefined>
     getCategories(): Promise<Category[] | undefined>
+    editCategory(data: Box[], id: string): Promise<Category | undefined>
+    deleteCategory(id: string): Promise<boolean>
     counterTypes: CounterType[]
     categories: Category[]
 }
@@ -54,6 +57,44 @@ export function CategoryProvider({ children }: Props) {
             return undefined
         }
     }
+    async function editCategory(data: Box[], id: string) {
+        try {
+            data.forEach((d) => {
+                d.counters.forEach((c) => {
+                    c.counterTypeId = c.counterType?.id
+                    delete c.counterType
+                    delete c.id
+                })
+            })
+            const response = await api.patch(
+                `categories/${id}`,
+                { boxes: data },
+                {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            return response.data
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function deleteCategory(id: string) {
+        try {
+            await api.delete(`categories/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            return true
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return false
+        }
+    }
 
     async function getCategories() {
         try {
@@ -78,8 +119,10 @@ export function CategoryProvider({ children }: Props) {
                 counterTypes,
                 categories,
                 getCounterTypes,
+                editCategory,
                 createCategory,
                 getCategories,
+                deleteCategory,
             }}
         >
             {children}

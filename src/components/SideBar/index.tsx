@@ -4,9 +4,11 @@ import { BiWorld, BiDotsHorizontalRounded } from 'react-icons/bi'
 import { BsArrowBarLeft } from 'react-icons/bs'
 import { IconType } from 'react-icons/lib'
 import { v4 } from 'uuid'
+import { Link } from 'react-router-dom'
 import { SideBarContainer } from './styles'
 import Logo from '../../assets/logo-icon.svg'
 import UserImg from '../../assets/user.png'
+import { RoutesName } from '../../routes'
 
 interface Props {
     active: string
@@ -33,7 +35,7 @@ export function SideBar({ active }: Props) {
         },
         {
             name: 'Categorias',
-            path: '/categories',
+            path: RoutesName.categories,
             class: 'categories',
             icon: FaChartPie,
         },
@@ -63,8 +65,8 @@ export function SideBar({ active }: Props) {
         },
         {
             name: 'Ponto de venda',
-            path: '/point-of-sales',
-            class: 'point-of-sales',
+            path: RoutesName.pointsOfSale,
+            class: 'points-of-sale',
             icon: FaChartPie,
         },
         {
@@ -94,16 +96,18 @@ export function SideBar({ active }: Props) {
             <div className="nav-items">
                 {tabs.map((tab) => {
                     return (
-                        <button
-                            key={v4()}
-                            className={`nav-item ${
-                                tab.class === active && 'nav-item-active'
-                            }`}
-                            type="button"
-                        >
-                            <tab.icon />
-                            <h1 className="tab-name">{tab.name}</h1>
-                        </button>
+                        <Link to={tab.path}>
+                            <button
+                                key={v4()}
+                                className={`nav-item ${
+                                    tab.class === active && 'nav-item-active'
+                                }`}
+                                type="button"
+                            >
+                                <tab.icon />
+                                <h1 className="tab-name">{tab.name}</h1>
+                            </button>
+                        </Link>
                     )
                 })}
             </div>

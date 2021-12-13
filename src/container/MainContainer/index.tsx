@@ -9,12 +9,13 @@ interface Props {
     children: ReactNode
     path: { label: string; path: string }[]
     title: string
+    active: string
 }
 
-export function MainContainer({ children, path, title }: Props) {
+export function MainContainer({ children, path, title, active }: Props) {
     return (
         <MainContainerStyled>
-            <SideBar active="categories" />
+            <SideBar active={active} />
             <div className="content">
                 <div className="path">
                     <div className="general-path">

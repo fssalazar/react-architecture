@@ -1,25 +1,36 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useState } from 'react'
 import { FiXCircle } from 'react-icons/fi'
 import { RiArrowUpSLine } from 'react-icons/ri'
+import { toast } from 'react-toastify'
 import { v4 } from 'uuid'
 import { Button } from '../../components/Button'
 import { SelectInput } from '../../components/SelectInput'
+import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
-import { Category } from '../../entities/category'
+import { Box, Category } from '../../entities/category'
 import { useCategory } from '../../hooks/useCategory'
 import { CreateCategory } from '../../modals/CreateCategory'
 import { CategoriesContent } from './styles'
 
 export function CategoriesPage() {
     // hooks
-    const { categories, getCategories, counterTypes, getCounterTypes } =
-        useCategory()
+    const {
+        categories,
+        editCategory,
+        getCategories,
+        counterTypes,
+        getCounterTypes,
+        deleteCategory,
+    } = useCategory()
     // state
     const [selectedCategory, setSelectedCategory] = useState<Category>()
     const [openCreateCategory, setOpenCreateCategory] = useState(false)
     const [canEdit, setCanEdit] = useState(false)
+    const [editLoader, setEditLoader] = useState(false)
 
     function closeCreateCategory() {
         setOpenCreateCategory(false)
@@ -51,6 +62,7 @@ export function CategoriesPage() {
         <MainContainer
             path={[{ label: 'Categorias', path: '/categories' }]}
             title="Categorias"
+            active="categories"
         >
             <CategoriesContent>
                 <div className="header-content">
@@ -60,9 +72,23 @@ export function CategoriesPage() {
                             placeholder="Selecione uma categoria"
                             onChange={(e) => {
                                 if (e) {
-                                    setSelectedCategory(
-                                        categories.find((c) => c.id === e.value)
+                                    const temp = categories.find(
+                                        (c) => c.id === e.value
                                     )
+                                    const boxes: Box[] = []
+                                    temp?.boxes.forEach((b) => {
+                                        boxes.push({
+                                            id: b.id,
+                                            label: b.label,
+                                            counters: [...b.counters],
+                                        })
+                                    })
+                                    if (temp) {
+                                        setSelectedCategory({
+                                            ...temp,
+                                            boxes,
+                                        })
+                                    }
                                 }
                             }}
                             options={categories.map((category) => {
@@ -73,45 +99,177 @@ export function CategoriesPage() {
                             })}
                         />
                     </div>
-                    <div className="header-btns">
-                        <Button
-                            type="button"
-                            buttonType="FILLED"
-                            color="SECONDARY"
-                            text="Contadores"
-                        />
-                        <Button
-                            type="button"
-                            buttonType="BORDERED"
-                            color="PRIMARY"
-                            text="Editar"
-                        />
-                        <Button
-                            type="button"
-                            buttonType="FILLED"
-                            color="SECONDARY"
-                            text="Criar"
-                            onClick={() => {
-                                setOpenCreateCategory(true)
-                            }}
-                        />
-                    </div>
+                    {!canEdit ? (
+                        <div className="header-btns">
+                            {selectedCategory && (
+                                <>
+                                    <Button
+                                        type="button"
+                                        buttonType="BORDERED"
+                                        color="PRIMARY"
+                                        text="Editar"
+                                        disabled={!selectedCategory}
+                                        onClick={() => {
+                                            setCanEdit(true)
+                                        }}
+                                    />
+                                    <Button
+                                        type="button"
+                                        buttonType="TEXT"
+                                        color="WARNING"
+                                        text="Deletar"
+                                        disabled={!selectedCategory}
+                                        onClick={async () => {
+                                            const response =
+                                                await deleteCategory(
+                                                    selectedCategory.id
+                                                )
+                                            if (response) {
+                                                toast.success(
+                                                    `Categoria ${selectedCategory.label} deletada com sucesso`
+                                                )
+                                            }
+                                        }}
+                                    />
+                                </>
+                            )}
+                            <Button
+                                type="button"
+                                buttonType="FILLED"
+                                color="SECONDARY"
+                                text="Criar"
+                                onClick={() => {
+                                    setOpenCreateCategory(true)
+                                }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="header-btns">
+                            <Button
+                                type="button"
+                                buttonType="TEXT"
+                                color="WARNING"
+                                text="Cancelar"
+                                onClick={() => {
+                                    if (selectedCategory) {
+                                        const temp = categories.find(
+                                            (c) => c.id === selectedCategory.id
+                                        )
+                                        const boxes: Box[] = []
+                                        temp?.boxes.forEach((b) => {
+                                            boxes.push({
+                                                id: b.id,
+                                                label: b.label,
+                                                counters: [...b.counters],
+                                            })
+                                        })
+                                        if (temp) {
+                                            setSelectedCategory({
+                                                ...temp,
+                                                boxes,
+                                            })
+                                        }
+                                    }
+                                    setCanEdit(false)
+                                }}
+                            />
+                            <Button
+                                type="button"
+                                buttonType="FILLED"
+                                color="SECONDARY"
+                                text="Salvar"
+                                onClick={async () => {
+                                    if (selectedCategory) {
+                                        const response = await editCategory(
+                                            selectedCategory.boxes,
+                                            selectedCategory.id
+                                        )
+                                        if (response) {
+                                            toast.success(
+                                                `Categoria ${selectedCategory.label} editada com sucesso`
+                                            )
+                                        }
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
+
                 <div className="category">
                     {selectedCategory && (
                         <div className="category-container">
+                            <div className="category-header">
+                                <h1 className="category-name">
+                                    {selectedCategory.label}
+                                </h1>
+                                <div className="category-config">
+                                    <div className="shared-stock">
+                                        <label htmlFor="sharedStock">
+                                            <input
+                                                type="checkbox"
+                                                id="sharedStock"
+                                                checked={
+                                                    selectedCategory.sharedSupply
+                                                }
+                                            />
+                                            Estoque compartilhado
+                                        </label>
+                                    </div>
+                                    <div className="shared-stock">
+                                        <label htmlFor="sharedVault">
+                                            <input
+                                                type="checkbox"
+                                                id="sharedVault"
+                                                checked={
+                                                    selectedCategory.sharedVault
+                                                }
+                                            />
+                                            Cofre compartilhado
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                             {selectedCategory &&
                                 selectedCategory.boxes.map((box, index) => {
                                     return (
                                         <div
                                             className="category-box"
-                                            key={v4()}
+                                            key={`${index}-box`}
                                         >
                                             <div className="header">
                                                 <div className="title">
-                                                    <h1 className="f16-700-dark">
-                                                        {box.label}
-                                                    </h1>
+                                                    {canEdit ? (
+                                                        <SimpleInput
+                                                            name={`${index}-boxname`}
+                                                            id={`${index}-boxname`}
+                                                            value={
+                                                                selectedCategory
+                                                                    .boxes[
+                                                                    index
+                                                                ].label
+                                                            }
+                                                            onChange={(e) => {
+                                                                setSelectedCategory(
+                                                                    (state) => {
+                                                                        state =
+                                                                            selectedCategory
+                                                                        state.boxes[
+                                                                            index
+                                                                        ].label =
+                                                                            e.target.value
+                                                                        return {
+                                                                            ...state,
+                                                                        }
+                                                                    }
+                                                                )
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <h1 className="f16-700-dark">
+                                                            {box.label}
+                                                        </h1>
+                                                    )}
                                                 </div>
                                                 <button type="button">
                                                     <RiArrowUpSLine />
@@ -139,95 +297,153 @@ export function CategoriesPage() {
                                                                 className="category-form"
                                                                 key={v4()}
                                                             >
-                                                                <SmallSelectInput
-                                                                    name="counterType"
-                                                                    value={{
-                                                                        label:
-                                                                            counter
-                                                                                .counterType
-                                                                                .label ||
-                                                                            'Selecione',
-                                                                        value: counter
-                                                                            .counterType
-                                                                            .id,
-                                                                    }}
-                                                                    onChange={(
-                                                                        e
-                                                                    ) => {
-                                                                        if (e) {
-                                                                            setSelectedCategory(
-                                                                                (
-                                                                                    state
-                                                                                ) => {
-                                                                                    state =
-                                                                                        selectedCategory
-                                                                                    state.boxes[
-                                                                                        index
-                                                                                    ].counters[
-                                                                                        idx
-                                                                                    ].counterType =
-                                                                                        e.value
-                                                                                    return {
-                                                                                        ...state,
+                                                                {canEdit ? (
+                                                                    <SmallSelectInput
+                                                                        name="counterType"
+                                                                        value={{
+                                                                            label:
+                                                                                counterTypes.find(
+                                                                                    (
+                                                                                        c
+                                                                                    ) =>
+                                                                                        c.id ===
+                                                                                        counter.counterType!
+                                                                                            .id
+                                                                                )
+                                                                                    ?.label ||
+                                                                                'Selecione',
+                                                                            value: counter.counterType!
+                                                                                .id,
+                                                                        }}
+                                                                        onChange={(
+                                                                            e
+                                                                        ) => {
+                                                                            if (
+                                                                                e
+                                                                            ) {
+                                                                                setSelectedCategory(
+                                                                                    (
+                                                                                        state
+                                                                                    ) => {
+                                                                                        state =
+                                                                                            selectedCategory
+                                                                                        state.boxes[
+                                                                                            index
+                                                                                        ].counters[
+                                                                                            idx
+                                                                                        ].counterType =
+                                                                                            {
+                                                                                                label:
+                                                                                                    counterTypes.find(
+                                                                                                        (
+                                                                                                            c
+                                                                                                        ) =>
+                                                                                                            c.id ===
+                                                                                                            e.value
+                                                                                                    )
+                                                                                                        ?.label ||
+                                                                                                    '',
+                                                                                                id: counterTypes.find(
+                                                                                                    (
+                                                                                                        c
+                                                                                                    ) =>
+                                                                                                        c.id ===
+                                                                                                        e.value
+                                                                                                )
+                                                                                                    ?.id,
+                                                                                                type:
+                                                                                                    counterTypes.find(
+                                                                                                        (
+                                                                                                            c
+                                                                                                        ) =>
+                                                                                                            c.id ===
+                                                                                                            e.value
+                                                                                                    )
+                                                                                                        ?.type ||
+                                                                                                    '',
+                                                                                            }
+                                                                                        return {
+                                                                                            ...state,
+                                                                                        }
                                                                                     }
-                                                                                }
-                                                                            )
-                                                                        }
-                                                                    }}
-                                                                    options={counterTypes.map(
-                                                                        (c) => {
-                                                                            return {
-                                                                                label: c.label,
-                                                                                value: c.id,
+                                                                                )
                                                                             }
+                                                                        }}
+                                                                        options={counterTypes.map(
+                                                                            (
+                                                                                c
+                                                                            ) => {
+                                                                                return {
+                                                                                    label: c.label,
+                                                                                    value: c.id,
+                                                                                }
+                                                                            }
+                                                                        )}
+                                                                    />
+                                                                ) : (
+                                                                    <p>
+                                                                        {
+                                                                            counter.counterType!
+                                                                                .label
                                                                         }
-                                                                    )}
-                                                                />
-                                                                <SmallSelectInput
-                                                                    name="pin"
-                                                                    value={{
-                                                                        label:
-                                                                            counter.pin ===
-                                                                            0
-                                                                                ? 'Selecione'
-                                                                                : `Pino ${counter.pin}`,
-                                                                        value: counter.pin,
-                                                                    }}
-                                                                    onChange={(
-                                                                        e
-                                                                    ) => {
-                                                                        if (e) {
-                                                                            setSelectedCategory(
-                                                                                (
-                                                                                    state
-                                                                                ) => {
-                                                                                    state =
-                                                                                        selectedCategory
-                                                                                    state.boxes[
-                                                                                        index
-                                                                                    ].counters[
-                                                                                        idx
-                                                                                    ].pin =
-                                                                                        e.value
-                                                                                    return {
-                                                                                        ...state,
+                                                                    </p>
+                                                                )}
+                                                                {canEdit ? (
+                                                                    <SmallSelectInput
+                                                                        name="pin"
+                                                                        value={{
+                                                                            label:
+                                                                                counter.pin ===
+                                                                                0
+                                                                                    ? 'Selecione'
+                                                                                    : `Pino ${counter.pin}`,
+                                                                            value: counter.pin,
+                                                                        }}
+                                                                        onChange={(
+                                                                            e
+                                                                        ) => {
+                                                                            if (
+                                                                                e
+                                                                            ) {
+                                                                                setSelectedCategory(
+                                                                                    (
+                                                                                        state
+                                                                                    ) => {
+                                                                                        state =
+                                                                                            selectedCategory
+                                                                                        state.boxes[
+                                                                                            index
+                                                                                        ].counters[
+                                                                                            idx
+                                                                                        ].pin =
+                                                                                            e.value
+                                                                                        return {
+                                                                                            ...state,
+                                                                                        }
                                                                                     }
-                                                                                }
-                                                                            )
-                                                                        }
-                                                                    }}
-                                                                    options={getPins().map(
-                                                                        (p) => {
-                                                                            return {
-                                                                                label: `Pino ${p}`,
-                                                                                value: p,
+                                                                                )
                                                                             }
-                                                                        }
-                                                                    )}
-                                                                />
+                                                                        }}
+                                                                        options={getPins().map(
+                                                                            (
+                                                                                p
+                                                                            ) => {
+                                                                                return {
+                                                                                    label: `Pino ${p}`,
+                                                                                    value: p,
+                                                                                }
+                                                                            }
+                                                                        )}
+                                                                    />
+                                                                ) : (
+                                                                    <p>{`Pino ${counter.pin}`}</p>
+                                                                )}
                                                                 <div className="type-input">
                                                                     <input
                                                                         type="checkbox"
+                                                                        disabled={
+                                                                            !canEdit
+                                                                        }
                                                                         checked={
                                                                             selectedCategory
                                                                                 .boxes[
@@ -264,6 +480,9 @@ export function CategoriesPage() {
                                                                 <div className="type-input">
                                                                     <input
                                                                         type="checkbox"
+                                                                        disabled={
+                                                                            !canEdit
+                                                                        }
                                                                         checked={
                                                                             selectedCategory
                                                                                 .boxes[
@@ -297,69 +516,73 @@ export function CategoriesPage() {
                                                                         }
                                                                     />
                                                                 </div>
-                                                                <button
-                                                                    type="button"
-                                                                    className="delete-counter"
-                                                                    onClick={() =>
-                                                                        setSelectedCategory(
-                                                                            (
-                                                                                state
-                                                                            ) => {
-                                                                                state =
-                                                                                    selectedCategory
-                                                                                state.boxes[
-                                                                                    index
-                                                                                ].counters.splice(
-                                                                                    idx,
-                                                                                    1
-                                                                                )
-                                                                                return {
-                                                                                    ...state,
+                                                                {canEdit && (
+                                                                    <button
+                                                                        type="button"
+                                                                        className="delete-counter"
+                                                                        onClick={() =>
+                                                                            setSelectedCategory(
+                                                                                (
+                                                                                    state
+                                                                                ) => {
+                                                                                    state =
+                                                                                        selectedCategory
+                                                                                    state.boxes[
+                                                                                        index
+                                                                                    ].counters.splice(
+                                                                                        idx,
+                                                                                        1
+                                                                                    )
+                                                                                    return {
+                                                                                        ...state,
+                                                                                    }
                                                                                 }
-                                                                            }
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <FiXCircle />
-                                                                </button>
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <FiXCircle />
+                                                                    </button>
+                                                                )}
                                                             </div>
                                                         )
                                                     }
                                                 )}
-                                                <div className="add-counter-btn">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => {
-                                                            setSelectedCategory(
-                                                                (state) => {
-                                                                    state =
-                                                                        selectedCategory
-                                                                    state.boxes[
-                                                                        index
-                                                                    ].counters.push(
-                                                                        {
-                                                                            isDigital:
-                                                                                false,
-                                                                            isMechanical:
-                                                                                false,
-                                                                            pin: 0,
-                                                                            counterType:
-                                                                                {
-                                                                                    label: '',
-                                                                                    type: '',
-                                                                                },
+                                                {canEdit && (
+                                                    <div className="add-counter-btn">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setSelectedCategory(
+                                                                    (state) => {
+                                                                        state =
+                                                                            selectedCategory
+                                                                        state.boxes[
+                                                                            index
+                                                                        ].counters.push(
+                                                                            {
+                                                                                isDigital:
+                                                                                    false,
+                                                                                isMechanical:
+                                                                                    false,
+                                                                                pin: 0,
+                                                                                counterType:
+                                                                                    {
+                                                                                        label: '',
+                                                                                        type: '',
+                                                                                    },
+                                                                            }
+                                                                        )
+                                                                        return {
+                                                                            ...state,
                                                                         }
-                                                                    )
-                                                                    return {
-                                                                        ...state,
                                                                     }
-                                                                }
-                                                            )
-                                                        }}
-                                                    >
-                                                        Adicionar contador
-                                                    </button>
-                                                </div>
+                                                                )
+                                                            }}
+                                                        >
+                                                            Adicionar contador
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )

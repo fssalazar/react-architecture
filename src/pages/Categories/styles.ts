@@ -22,6 +22,39 @@ export const CategoriesContent = styled.div`
     }
     .category-container {
         width: 70%;
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2.6rem 0;
+            .category-name {
+                font-size: 2.4rem;
+                color: var(--color-dark);
+                font-weight: 700;
+            }
+            .category-config {
+                display: flex;
+                align-items: center;
+                .shared-stock {
+                    margin-right: 1rem;
+                }
+                .shared-stock,
+                .shared-vault {
+                    label {
+                        display: flex;
+                        align-items: center;
+                        &:hover {
+                            cursor: pointer;
+                        }
+                        input {
+                            margin-right: 0.5rem;
+                            height: 1.5rem;
+                            width: 1.5rem;
+                        }
+                    }
+                }
+            }
+        }
     }
     .category-box {
         width: 100%;
