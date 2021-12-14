@@ -5,17 +5,21 @@
 import { FormHandles, Scope } from '@unform/core'
 import * as Yup from 'yup'
 import { Form } from '@unform/web'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import ModalContainer from 'react-modal'
 import cep from 'cep-promise'
-import { v4 } from 'uuid'
 import { toast } from 'react-toastify'
 import { Button } from '../../components/Button'
 import { Input } from '../../unformInputs/Input'
 import { getValidationErrors } from '../../utils/getValidationErrors'
 import { CreatePointOfSaleContent } from './styles'
-import { handlePointOfSaleDto } from '../../dtos/createPointOfSale'
-import { formatCep, unFormatCep } from '../../utils/maskFunctions'
+import { handlePointOfSaleDto } from '../../dtos/handlePointOfSale'
+import {
+    formatCep,
+    phoneFormatter,
+    unFormatCep,
+} from '../../utils/maskFunctions'
+import { usePointOfSale } from '../../hooks/usePointOfSale'
 
 interface Props {
     isOpen: boolean
@@ -24,13 +28,15 @@ interface Props {
 
 export function CreatePointOfSale({ isOpen, onRequestClose }: Props) {
     // hooks
-
+    const { createPointOfSale } = usePointOfSale()
     // refs
     const formRef = useRef<FormHandles>(null)
     // state
     const [busyBtn, setBusyBtn] = useState(false)
     const [loadingCepResponse, setLoadingCepResponse] = useState<boolean>(false)
     const [cepFormatted, setCepFormatted] = useState<string>()
+    const [phoneFormatted, setPhoneFormatted] = useState<string>()
+    const [isPercentage, setIsPercentage] = useState(true)
 
     async function handlePointOfSale(data: handlePointOfSaleDto) {
         setBusyBtn(true)
@@ -63,13 +69,23 @@ export function CreatePointOfSale({ isOpen, onRequestClose }: Props) {
                     number: Yup.string().required('Insira um número'),
                 }),
             })
-            console.log(data)
             await schema.validate(data, {
                 abortEarly: false,
             })
-        } catch (error) {
+            const createPointOfSaleData: handlePointOfSaleDto = {
+                ...data,
+                isPercentage,
+            }
+            const response = await createPointOfSale(createPointOfSaleData)
+            if (response) {
+                toast.success(`Ponto de venda ${data.label} criado com sucesso`)
+            }
             setBusyBtn(false)
-            console.log(error)
+        } catch (error) {
+            toast.info(
+                'Verifique se todos os campos foram preenchidos corretamente'
+            )
+            setBusyBtn(false)
             if (error instanceof Yup.ValidationError) {
                 const errors = getValidationErrors(error)
                 formRef.current?.setErrors(errors)
@@ -118,7 +134,7 @@ export function CreatePointOfSale({ isOpen, onRequestClose }: Props) {
                         Criar ponto de venda
                     </h1>
                 </div>
-                <Form ref={formRef} onSubmit={handlePointOfSale}>
+                <Form ref={formRef} onSubmit={handlePointOfSale} noValidate>
                     <div style={{ marginBottom: '1.5rem' }}>
                         <Input name="label" label="Nome do local" />
                     </div>
@@ -157,11 +173,35 @@ export function CreatePointOfSale({ isOpen, onRequestClose }: Props) {
                     </Scope>
                     <div className="grid grid-1-1">
                         <Input name="manager" label="Responsável" />
-                        <Input name="phoneNumber" label="Contato" />
+                        <Input
+                            name="phoneNumber"
+                            label="Contato"
+                            value={phoneFormatted}
+                            onChange={(e) =>
+                                setPhoneFormatted(
+                                    phoneFormatter(e.target.value, 'INPUT')
+                                )
+                            }
+                        />
                     </div>
                     <div className="grid grid-2-3">
                         <Input name="rent" label="Aluguel" />
-                        <div className="is-percentage" />
+                        <div className="payment-type">
+                            <label
+                                htmlFor="isPercentage"
+                                className="isPercentage f14-700-dark"
+                            >
+                                <input type="checkbox" id="isPercentage" />
+                                Porcentagem
+                            </label>
+                            <label
+                                htmlFor="isValue"
+                                className="isValue f14-700-dark"
+                            >
+                                <input type="checkbox" id="isValue" />
+                                Valor fixo
+                            </label>
+                        </div>
                     </div>
                     <div className="btns">
                         <Button
@@ -169,12 +209,14 @@ export function CreatePointOfSale({ isOpen, onRequestClose }: Props) {
                             type="button"
                             buttonType="TEXT"
                             color="WARNING"
+                            onClick={() => onRequestClose()}
                         />
                         <Button
                             text="Salvar"
                             type="submit"
                             buttonType="FILLED"
                             color="SECONDARY"
+                            busy={busyBtn}
                         />
                     </div>
                 </Form>

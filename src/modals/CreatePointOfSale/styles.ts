@@ -23,6 +23,25 @@ export const CreatePointOfSaleContent = styled.div`
                 grid-template-columns: 2fr 3fr;
             }
         }
+        .payment-type {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 70%;
+            .isPercentage,
+            .isValue {
+                display: flex;
+                align-items: center;
+                &:hover {
+                    cursor: pointer;
+                }
+                input {
+                    width: 1.5rem;
+                    height: 1.5rem;
+                    margin-right: 1rem;
+                }
+            }
+        }
     }
     .btns {
         display: flex;

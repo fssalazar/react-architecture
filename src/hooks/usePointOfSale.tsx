@@ -4,7 +4,7 @@ import { api } from '../service/api'
 import { useAuth } from './use-auth'
 import { CounterType } from '../entities/category'
 import { CreateCategoryDto } from '../dtos/createCategory'
-import { handlePointOfSaleDto } from '../dtos/createPointOfSale'
+import { handlePointOfSaleDto } from '../dtos/handlePointOfSale'
 
 interface PointOfSaleContext {
     getPointsOfSale(): Promise<any[] | undefined>
@@ -38,7 +38,7 @@ export function PointOfSaleProvider({ children }: Props) {
 
     async function createPointOfSale(data: handlePointOfSaleDto) {
         try {
-            const response = await api.post('categories', data, {
+            const response = await api.post('points-of-sale', data, {
                 headers: {
                     authorization: `Bearer ${token}`,
                 },

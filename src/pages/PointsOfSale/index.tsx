@@ -80,7 +80,7 @@ export function PointsOfSalePage() {
             </PointsOfSaleContainer>
             <CreatePointOfSale
                 isOpen={openCreatePointOfSale}
-                onRequestClose={() => setOpenCreatePointOfSale}
+                onRequestClose={() => setOpenCreatePointOfSale(false)}
             />
         </MainContainer>
     )

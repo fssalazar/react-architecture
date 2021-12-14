@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react'
-import { PointsOfSalePage } from '../pages/PointsOfSale'
 import { AuthProvider } from './use-auth'
 import { UserProvider } from './use-user'
 import { CategoryProvider } from './useCategory'
