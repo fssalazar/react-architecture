@@ -2,13 +2,23 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react'
 import { api } from '../service/api'
 import { useAuth } from './use-auth'
-import { CounterType } from '../entities/category'
-import { CreateCategoryDto } from '../dtos/createCategory'
 import { handlePointOfSaleDto } from '../dtos/handlePointOfSale'
+import { PointOfSale } from '../entities/pointOfSale'
 
 interface PointOfSaleContext {
-    getPointsOfSale(): Promise<any[] | undefined>
+    getPointsOfSale(
+        limit?: number,
+        offset?: number
+    ): Promise<{ count: number; pointsOfSale: PointOfSale[] } | undefined>
     createPointOfSale(data: handlePointOfSaleDto): Promise<void | undefined>
+    getPointOfSale(id: string): Promise<PointOfSale | undefined>
+    editPointOfSale(
+        data: handlePointOfSaleDto,
+        id: string
+    ): Promise<boolean | undefined>
+    pointsOfSale: PointOfSale[]
+    pointOfSale?: PointOfSale
+    count?: number
 }
 
 interface Props {
@@ -21,14 +31,52 @@ export function PointOfSaleProvider({ children }: Props) {
     // hook
     const { token } = useAuth()
     // State
+    const [pointsOfSale, setPointsOfSale] = useState<PointOfSale[]>([])
+    const [pointOfSale, setPointOfSale] = useState<PointOfSale>()
+    const [count, setCount] = useState<number>()
 
-    async function getPointsOfSale() {
+    async function getPointsOfSale(limit?: number, offset?: number) {
         try {
-            const response = await api.get<any[]>('points-of-sale', {
+            if (!limit) {
+                limit = 10
+            }
+            if (!offset) {
+                offset = 0
+            }
+
+            const response = await api.get<{
+                count: number
+                pointsOfSale: PointOfSale[]
+            }>('points-of-sale', {
                 headers: {
                     authorization: `Bearer ${token}`,
                 },
+                params: {
+                    limit,
+                    offset,
+                },
             })
+            setCount(response.data.count)
+            setPointsOfSale(response.data.pointsOfSale)
+            return response.data
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function getPointOfSale(id: string) {
+        try {
+            const response = await api.get<PointOfSale>(
+                `points-of-sale/${id}`,
+                {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            console.log(response.data)
+            setPointOfSale(response.data)
             return response.data
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')
@@ -43,7 +91,34 @@ export function PointOfSaleProvider({ children }: Props) {
                     authorization: `Bearer ${token}`,
                 },
             })
+            if (data.manager === '') {
+                delete data.manager
+            }
+            setPointsOfSale([response.data, ...pointsOfSale])
             return response.data
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function editPointOfSale(data: handlePointOfSaleDto, id: string) {
+        try {
+            const response = await api.patch(`points-of-sale/${id}`, data, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setPointOfSale({
+                id,
+                label: data.label,
+                address: data.address ? data.address : undefined,
+                manager: data.manager ? data.manager : undefined,
+                phoneNumber: data.phoneNumber ? data.phoneNumber : undefined,
+                ownerId: '',
+            })
+            console.log(response.data)
+            return true
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')
             return undefined
@@ -52,7 +127,15 @@ export function PointOfSaleProvider({ children }: Props) {
 
     return (
         <PointOfSaleContext.Provider
-            value={{ createPointOfSale, getPointsOfSale }}
+            value={{
+                createPointOfSale,
+                getPointsOfSale,
+                pointsOfSale,
+                count,
+                getPointOfSale,
+                editPointOfSale,
+                pointOfSale,
+            }}
         >
             {children}
         </PointOfSaleContext.Provider>

@@ -1,36 +1,55 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
-import { v4 } from 'uuid'
+import { Pagination } from '@material-ui/lab'
 import { Button } from '../../components/Button'
 import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
-import { CreateCategory } from '../../modals/CreateCategory'
-import { CreatePointOfSale } from '../../modals/CreatePointOfSale'
+import { usePointOfSale } from '../../hooks/usePointOfSale'
+import { HandlePointOfSale } from '../../modals/HandlePointOfSale'
 import { RoutesName } from '../../routes'
 import { PaginationContent } from '../../utils/SharedStyles'
-import { PointsOfSaleContainer } from './styles'
+import { PaginationContainer, PointsOfSaleContainer } from './styles'
+import { Table } from '../../utils/Table'
+import { SinglePointOfSale } from '../../components/SinglePointOfSale'
 
 export function PointsOfSalePage() {
     // hooks
-
+    const { getPointsOfSale, count, pointsOfSale } = usePointOfSale()
     // state
     const [openCreatePointOfSale, setOpenCreatePointOfSale] = useState(false)
+    const [busy, setBusy] = useState(false)
+    const [limit, setLimit] = useState<{ label: string; value: number }>({
+        label: '10',
+        value: 10,
+    })
+    const [pageSelected, setPageSelected] = useState<number>(1)
+
+    function numberOfPages(countNum: number) {
+        return Math.ceil(countNum / limit.value)
+    }
 
     useEffect(() => {
+        setBusy(true)
         ;(async () => {
-            console.log('a')
+            getPointsOfSale(
+                limit.value,
+                pageSelected * limit.value - limit.value
+            )
+            setBusy(false)
         })()
-    }, [])
+    }, [limit, pageSelected])
 
     return (
         <MainContainer
             path={[{ label: 'Pontos de venda', path: RoutesName.pointsOfSale }]}
             title="Pontos de veda"
             active="points-of-sale"
+            busy={busy}
         >
             <PointsOfSaleContainer>
                 <div className="filters">
@@ -40,7 +59,7 @@ export function PointsOfSalePage() {
                         icon={FiSearch}
                     />
                     <div className="location-search">
-                        <div className="location-search-select">
+                        {/* <div className="location-search-select">
                             <SmallSelectInput
                                 name="location"
                                 options={[
@@ -49,7 +68,7 @@ export function PointsOfSalePage() {
                                 ]}
                                 placeholder="Localização"
                             />
-                        </div>
+                        </div> */}
                         <Button
                             text="Criar ponto de venda"
                             type="button"
@@ -62,23 +81,121 @@ export function PointsOfSalePage() {
                 <div className="points-of-sale-content">
                     <PaginationContent>
                         <div className="results">
-                            <p>Mostrando 21 - 30 de 88 resultados</p>
+                            <p>{`Mostrando ${
+                                pageSelected * limit.value - limit.value + 1
+                            } - ${
+                                pageSelected * limit.value < count!
+                                    ? pageSelected * limit.value
+                                    : count
+                            } de ${count} resultados`}</p>
                         </div>
-                        <div className="pagination" />
+                        <PaginationContainer>
+                            <Pagination
+                                count={numberOfPages(count || 0)}
+                                color="primary"
+                                variant="outlined"
+                                page={pageSelected}
+                                onChange={(
+                                    event: any,
+                                    page: React.SetStateAction<number>
+                                ) => {
+                                    setPageSelected(page)
+                                }}
+                            />
+                        </PaginationContainer>
                         <div className="number-of-results">
                             <p>Itens por páginas</p>
                             <div className="number-search">
                                 <SmallSelectInput
                                     name="number"
                                     placeholder=""
-                                    options={[{ label: '10', value: 10 }]}
+                                    value={limit}
+                                    options={[
+                                        { label: '10', value: 10 },
+                                        { label: '20', value: 20 },
+                                        { label: '50', value: 50 },
+                                        { label: '100', value: 100 },
+                                    ]}
+                                    onChange={(e) => {
+                                        if (e) {
+                                            setLimit({
+                                                label: e.label,
+                                                value: e.value,
+                                            })
+                                        }
+                                    }}
                                 />
                             </div>
                         </div>
                     </PaginationContent>
                 </div>
+                <Table>
+                    <div
+                        className="table-header"
+                        style={{ gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr' }}
+                    >
+                        <h1>Nome</h1>
+                        <h1>Localização</h1>
+                        <h1>Telefone</h1>
+                        <button type="button">Qtd. Máquinas</button>
+                        <button type="button">Última visita</button>
+                    </div>
+                    {pointsOfSale.map((pointOfSale) => {
+                        return <SinglePointOfSale pointOfSale={pointOfSale} />
+                    })}
+                </Table>
+                <PaginationContent>
+                    <div className="results">
+                        <p>{`Mostrando ${
+                            pageSelected * limit.value - limit.value + 1
+                        } - ${
+                            pageSelected * limit.value < count!
+                                ? pageSelected * limit.value
+                                : count
+                        } de ${count} resultados`}</p>
+                    </div>
+                    <PaginationContainer>
+                        <Pagination
+                            count={numberOfPages(count || 0)}
+                            color="primary"
+                            variant="outlined"
+                            page={pageSelected}
+                            onChange={(
+                                event: any,
+                                page: React.SetStateAction<number>
+                            ) => {
+                                setPageSelected(page)
+                            }}
+                        />
+                    </PaginationContainer>
+                    <div className="number-of-results">
+                        <p>Itens por páginas</p>
+                        <div className="number-search">
+                            <SmallSelectInput
+                                name="number"
+                                placeholder=""
+                                value={limit}
+                                options={[
+                                    { label: '10', value: 10 },
+                                    { label: '20', value: 20 },
+                                    { label: '50', value: 50 },
+                                    { label: '100', value: 100 },
+                                ]}
+                                onChange={(e) => {
+                                    if (e) {
+                                        setLimit({
+                                            label: e.label,
+                                            value: e.value,
+                                        })
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                </PaginationContent>
             </PointsOfSaleContainer>
-            <CreatePointOfSale
+
+            <HandlePointOfSale
                 isOpen={openCreatePointOfSale}
                 onRequestClose={() => setOpenCreatePointOfSale(false)}
             />

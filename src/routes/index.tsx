@@ -6,6 +6,7 @@ import { EmailSentPage } from '../pages/EmailSent'
 import { ForgotPasswordPage } from '../pages/ForgotPassword'
 import { LoginPage } from '../pages/Login'
 import { PasswordChangedPage } from '../pages/PasswordChanged'
+import { PointOfSaleInfoPage } from '../pages/PointOfSaleInfo'
 import { PointsOfSalePage } from '../pages/PointsOfSale'
 import { Route } from './route'
 
@@ -17,6 +18,7 @@ export const RoutesName: {
     passwordChanged: string
     categories: string
     pointsOfSale: string
+    singlePointsOfSale: string
 } = {
     login: '/',
     forgotPassword: '/forgot-password',
@@ -25,6 +27,7 @@ export const RoutesName: {
     passwordChanged: '/password-changed',
     categories: '/categories',
     pointsOfSale: '/points-of-sale',
+    singlePointsOfSale: '/point-of-sale-info',
 }
 
 export function Routes() {
@@ -71,6 +74,12 @@ export function Routes() {
                 isPrivate
                 exact
                 component={PointsOfSalePage}
+            />
+            <Route
+                path={RoutesName.singlePointsOfSale}
+                isPrivate
+                exact
+                component={PointOfSaleInfoPage}
             />
         </Switch>
     )

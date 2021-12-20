@@ -10,9 +10,10 @@ interface Props {
     path: { label: string; path: string }[]
     title: string
     active: string
+    busy: boolean
 }
 
-export function MainContainer({ children, path, title, active }: Props) {
+export function MainContainer({ children, path, title, active, busy }: Props) {
     return (
         <MainContainerStyled>
             <SideBar active={active} />
@@ -33,7 +34,7 @@ export function MainContainer({ children, path, title, active }: Props) {
                     })}
                 </div>
                 <h1 className="title">{title}</h1>
-                {children}
+                {busy ? <div /> : <>{children}</>}
             </div>
         </MainContainerStyled>
     )

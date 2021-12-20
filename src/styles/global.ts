@@ -109,6 +109,11 @@ export default createGlobalStyle`
     font-size: 1.4rem;
     font-weight: 700;
   }
+  .f12-600-gray {
+    color: var(--color-gray);
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
   .f12-500-gray {
     color: var(--color-gray);
     font-size: 1.4rem;

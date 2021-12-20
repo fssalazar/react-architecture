@@ -1,10 +1,9 @@
 export interface handlePointOfSaleDto {
     id?: string
     label: string
-    manager: string
-    rent: number
-    isPercentage: boolean
-    address: {
+    manager?: string
+    phoneNumber?: string
+    address?: {
         zipCode: string
         state: string
         city: string

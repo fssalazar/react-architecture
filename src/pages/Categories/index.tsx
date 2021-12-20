@@ -30,6 +30,7 @@ export function CategoriesPage() {
     const [selectedCategory, setSelectedCategory] = useState<Category>()
     const [openCreateCategory, setOpenCreateCategory] = useState(false)
     const [canEdit, setCanEdit] = useState(false)
+    const [busy, setBusy] = useState(false)
     const [editLoader, setEditLoader] = useState(false)
 
     function closeCreateCategory() {
@@ -52,9 +53,11 @@ export function CategoriesPage() {
     }
 
     useEffect(() => {
+        setBusy(true)
         ;(async () => {
             await getCategories()
             await getCounterTypes()
+            setBusy(false)
         })()
     }, [])
 
@@ -63,6 +66,7 @@ export function CategoriesPage() {
             path={[{ label: 'Categorias', path: '/categories' }]}
             title="Categorias"
             active="categories"
+            busy={busy}
         >
             <CategoriesContent>
                 <div className="header-content">
