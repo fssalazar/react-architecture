@@ -36,7 +36,6 @@ export function CategoryProvider({ children }: Props) {
                 },
             })
             setCounterTypes(response.data)
-            console.log(response.data)
             return response.data
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')
@@ -51,6 +50,7 @@ export function CategoryProvider({ children }: Props) {
                     authorization: `Bearer ${token}`,
                 },
             })
+            setCategories([...categories, response.data])
             return response.data
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')

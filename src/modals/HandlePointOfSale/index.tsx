@@ -44,7 +44,7 @@ export function HandlePointOfSale({
     const [cepFormatted, setCepFormatted] = useState<string>()
     const [phoneFormatted, setPhoneFormatted] = useState<string>()
 
-    useEffect(() => {
+    setTimeout(() => {
         if (pointOfSale) {
             formRef.current?.setData({
                 label: pointOfSale.label,
@@ -61,7 +61,8 @@ export function HandlePointOfSale({
                 },
             })
         }
-    }, [busy])
+        console.log('lala')
+    }, 500)
 
     async function handlePointOfSale(data: handlePointOfSaleDto) {
         setBusyBtn(true)

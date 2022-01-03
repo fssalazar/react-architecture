@@ -8,6 +8,7 @@ import { LoginPage } from '../pages/Login'
 import { PasswordChangedPage } from '../pages/PasswordChanged'
 import { PointOfSaleInfoPage } from '../pages/PointOfSaleInfo'
 import { PointsOfSalePage } from '../pages/PointsOfSale'
+import { TemplatesPage } from '../pages/Templates'
 import { Route } from './route'
 
 export const RoutesName: {
@@ -19,6 +20,7 @@ export const RoutesName: {
     categories: string
     pointsOfSale: string
     singlePointsOfSale: string
+    templates: string
 } = {
     login: '/',
     forgotPassword: '/forgot-password',
@@ -28,6 +30,7 @@ export const RoutesName: {
     categories: '/categories',
     pointsOfSale: '/points-of-sale',
     singlePointsOfSale: '/point-of-sale-info',
+    templates: '/templates',
 }
 
 export function Routes() {
@@ -80,6 +83,12 @@ export function Routes() {
                 isPrivate
                 exact
                 component={PointOfSaleInfoPage}
+            />
+            <Route
+                path={RoutesName.templates}
+                isPrivate
+                exact
+                component={TemplatesPage}
             />
         </Switch>
     )

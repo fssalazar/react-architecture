@@ -61,6 +61,16 @@ export function CategoriesPage() {
         })()
     }, [])
 
+    useEffect(() => {
+        if (!selectedCategory) {
+            setBusy(true)
+            ;(async () => {
+                await getCategories()
+                setBusy(false)
+            })()
+        }
+    }, [selectedCategory])
+
     return (
         <MainContainer
             path={[{ label: 'Categorias', path: '/categories' }]}
@@ -183,16 +193,41 @@ export function CategoriesPage() {
                                 color="SECONDARY"
                                 text="Salvar"
                                 onClick={async () => {
-                                    if (selectedCategory) {
-                                        const response = await editCategory(
-                                            selectedCategory.boxes,
-                                            selectedCategory.id
-                                        )
-                                        if (response) {
-                                            toast.success(
-                                                `Categoria ${selectedCategory.label} editada com sucesso`
-                                            )
+                                    setEditLoader(true)
+                                    let canSubmit = true
+                                    selectedCategory?.boxes.forEach((box) => {
+                                        if (box.label === '' || !box.label) {
+                                            canSubmit = false
                                         }
+                                        box.counters.forEach((counter) => {
+                                            if (
+                                                counter.counterType?.type ===
+                                                    '' ||
+                                                counter.pin === 0
+                                            ) {
+                                                canSubmit = false
+                                            }
+                                        })
+                                    })
+                                    if (canSubmit) {
+                                        if (selectedCategory) {
+                                            const response = await editCategory(
+                                                selectedCategory.boxes,
+                                                selectedCategory.id
+                                            )
+                                            setEditLoader(false)
+                                            setCanEdit(false)
+                                            if (response) {
+                                                toast.success(
+                                                    `Categoria ${selectedCategory.label} editada com sucesso`
+                                                )
+                                                setSelectedCategory(undefined)
+                                            }
+                                        }
+                                    } else {
+                                        toast.warning(
+                                            `Verifique se você preencheu todos os campos para editar a categoria ${selectedCategory?.label}`
+                                        )
                                     }
                                 }}
                             />
@@ -216,6 +251,7 @@ export function CategoriesPage() {
                                                 checked={
                                                     selectedCategory.sharedSupply
                                                 }
+                                                disabled
                                             />
                                             Estoque compartilhado
                                         </label>
@@ -228,6 +264,7 @@ export function CategoriesPage() {
                                                 checked={
                                                     selectedCategory.sharedVault
                                                 }
+                                                disabled
                                             />
                                             Cofre compartilhado
                                         </label>
@@ -304,21 +341,28 @@ export function CategoriesPage() {
                                                                 {canEdit ? (
                                                                     <SmallSelectInput
                                                                         name="counterType"
-                                                                        value={{
-                                                                            label:
-                                                                                counterTypes.find(
-                                                                                    (
-                                                                                        c
-                                                                                    ) =>
-                                                                                        c.id ===
-                                                                                        counter.counterType!
-                                                                                            .id
-                                                                                )
-                                                                                    ?.label ||
-                                                                                'Selecione',
-                                                                            value: counter.counterType!
-                                                                                .id,
-                                                                        }}
+                                                                        value={
+                                                                            counter.counterType
+                                                                                ? {
+                                                                                      value: counter
+                                                                                          .counterType
+                                                                                          .id,
+                                                                                      label: counterTypes.find(
+                                                                                          (
+                                                                                              c
+                                                                                          ) =>
+                                                                                              c.id ===
+                                                                                              counter
+                                                                                                  .counterType
+                                                                                                  ?.id
+                                                                                      )
+                                                                                          ?.label,
+                                                                                  }
+                                                                                : {
+                                                                                      label: 'Selecionar',
+                                                                                      value: 'none',
+                                                                                  }
+                                                                        }
                                                                         onChange={(
                                                                             e
                                                                         ) => {
@@ -386,10 +430,21 @@ export function CategoriesPage() {
                                                                     />
                                                                 ) : (
                                                                     <p>
-                                                                        {
-                                                                            counter.counterType!
-                                                                                .label
-                                                                        }
+                                                                        {counter
+                                                                            .counterType
+                                                                            ?.label
+                                                                            ? counter
+                                                                                  .counterType
+                                                                                  ?.label
+                                                                            : counterTypes.find(
+                                                                                  (
+                                                                                      c
+                                                                                  ) =>
+                                                                                      c.id ===
+                                                                                      counter
+                                                                                          .counterType
+                                                                                          ?.id
+                                                                              )}
                                                                     </p>
                                                                 )}
                                                                 {canEdit ? (

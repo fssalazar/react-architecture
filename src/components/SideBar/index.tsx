@@ -76,6 +76,12 @@ export function SideBar({ active }: Props) {
             icon: FaChartPie,
         },
         {
+            name: 'Cargos',
+            path: '/templates',
+            class: 'templates',
+            icon: FaChartPie,
+        },
+        {
             name: 'Usuários',
             path: '/users',
             class: 'users',

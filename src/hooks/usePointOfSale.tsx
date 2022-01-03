@@ -75,7 +75,6 @@ export function PointOfSaleProvider({ children }: Props) {
                     },
                 }
             )
-            console.log(response.data)
             setPointOfSale(response.data)
             return response.data
         } catch (error) {

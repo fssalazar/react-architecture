@@ -8,6 +8,7 @@ import { FiInfo, FiXCircle } from 'react-icons/fi'
 import { RiArrowUpSLine } from 'react-icons/ri'
 
 import { v4 } from 'uuid'
+import { toast } from 'react-toastify'
 import { CreateCategorySteps } from '../../components/CreateCategorySteps'
 import { CreateCategoryContent } from './styles'
 import CategoryImg from '../../assets/example1.png'
@@ -33,7 +34,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
     )
     const [category, setCategory] = useState<CreateCategoryDto>()
     const [typeChosen, setTypeChosen] = useState<
-        'GRUA' | 'MULTI_BOXES' | 'MULTI_STOCKS' | 'NO_OUT'
+        'GRUA' | 'MULTI_BOXES' | 'MULTI_STOCKS' | 'NO_OUT' | undefined
     >()
 
     const pin = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -63,11 +64,18 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
             onRequestClose={onRequestClose}
             overlayClassName="react-modal-overlay"
             className="react-modal-content"
+            shouldCloseOnOverlayClick={false}
+            shouldCloseOnEsc={false}
         >
             <button
                 className="close"
                 type="button"
-                onClick={() => onRequestClose()}
+                onClick={() => {
+                    setStep('ONE')
+                    setCategory(undefined)
+                    setTypeChosen(undefined)
+                    onRequestClose()
+                }}
             >
                 X
             </button>
@@ -252,13 +260,27 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                 buttonType="TEXT"
                                 color="WARNING"
                                 text="Cancelar"
+                                onClick={() => {
+                                    setStep('ONE')
+                                    setCategory(undefined)
+                                    setTypeChosen(undefined)
+                                    onRequestClose()
+                                }}
                             />
                             <Button
                                 type="button"
                                 buttonType="FILLED"
                                 color="SECONDARY"
                                 text="Próximo"
-                                onClick={() => setStep('TWO')}
+                                onClick={() => {
+                                    if (category || typeChosen) {
+                                        setStep('TWO')
+                                    } else {
+                                        toast.info(
+                                            'Selecione um tipo de categoria para prosseguir'
+                                        )
+                                    }
+                                }}
                             />
                         </div>
                     </div>
@@ -391,7 +413,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                                 }
                                                 state = {
                                                     label: '',
-                                                    sharedSupply: false,
+                                                    sharedSupply: true,
                                                     sharedVault: false,
                                                     boxes: [
                                                         {
@@ -679,6 +701,10 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     buttonType="TEXT"
                                     color="WARNING"
                                     text="Cancelar"
+                                    onClick={() => {
+                                        setCategory(undefined)
+                                        onRequestClose()
+                                    }}
                                 />
                                 <div className="step-btns">
                                     <Button
@@ -686,14 +712,40 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                         buttonType="TEXT"
                                         color="PRIMARY"
                                         text="Anterior"
-                                        onClick={() => setStep('ONE')}
+                                        onClick={() => {
+                                            setCategory(undefined)
+                                            setStep('ONE')
+                                        }}
                                     />
                                     <Button
                                         type="button"
                                         buttonType="FILLED"
                                         color="SECONDARY"
                                         text="Próximo"
-                                        onClick={() => setStep('THREE')}
+                                        onClick={() => {
+                                            let shouldStepThree = true
+                                            category?.boxes.forEach((box) => {
+                                                box.counters.forEach(
+                                                    (counter) => {
+                                                        if (
+                                                            counter.counterTypeId ===
+                                                                '' ||
+                                                            counter.pin === 0
+                                                        ) {
+                                                            shouldStepThree =
+                                                                false
+                                                        }
+                                                    }
+                                                )
+                                            })
+                                            if (shouldStepThree) {
+                                                setStep('THREE')
+                                            } else {
+                                                toast.warning(
+                                                    'Verifique se você preencheu todos os campos corretamente'
+                                                )
+                                            }
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -717,6 +769,10 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     type="checkbox"
                                     id="sharedSupply"
                                     checked={category.sharedSupply}
+                                    disabled={
+                                        typeChosen === 'GRUA' ||
+                                        (typeChosen === 'MULTI_STOCKS' && true)
+                                    }
                                     onChange={(e) => {
                                         setCategory((state) => {
                                             state = category
@@ -736,6 +792,10 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     type="checkbox"
                                     id="unSharedSupply"
                                     checked={!category.sharedSupply}
+                                    disabled={
+                                        typeChosen === 'GRUA' ||
+                                        (typeChosen === 'MULTI_STOCKS' && true)
+                                    }
                                     onChange={(e) => {
                                         setCategory((state) => {
                                             state = category
@@ -760,6 +820,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     type="checkbox"
                                     id="sharedVault"
                                     checked={category.sharedVault}
+                                    disabled={typeChosen === 'GRUA' && true}
                                     onChange={(e) => {
                                         setCategory((state) => {
                                             state = category
@@ -778,6 +839,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     type="checkbox"
                                     id="unSharedVault"
                                     checked={!category.sharedVault}
+                                    disabled={typeChosen === 'GRUA' && true}
                                     onChange={(e) => {
                                         setCategory((state) => {
                                             state = category
@@ -795,6 +857,12 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                 buttonType="TEXT"
                                 color="WARNING"
                                 text="Cancelar"
+                                onClick={() => {
+                                    setStep('ONE')
+                                    setCategory(undefined)
+                                    setTypeChosen(undefined)
+                                    onRequestClose()
+                                }}
                             />
                             <div className="step-btns">
                                 <Button
@@ -837,6 +905,12 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                 buttonType="TEXT"
                                 color="WARNING"
                                 text="Cancelar"
+                                onClick={() => {
+                                    setStep('ONE')
+                                    setCategory(undefined)
+                                    setTypeChosen(undefined)
+                                    onRequestClose()
+                                }}
                             />
                             <div className="step-btns">
                                 <Button
