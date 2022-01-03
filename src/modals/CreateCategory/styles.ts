@@ -78,6 +78,17 @@ export const CreateCategoryContent = styled.div`
             border-radius: 1.6rem;
             margin: 2.4rem 0px;
             padding: 1.6rem;
+            position: relative;
+            .delete-box {
+                position: absolute;
+                border: none;
+                top: 1rem;
+                left: 1rem;
+                background-color: inherit;
+                color: var(--color-warning);
+                width: 2.5rem;
+                height: 2.5rem;
+            }
             .header {
                 display: flex;
                 align-items: center;
@@ -141,6 +152,18 @@ export const CreateCategoryContent = styled.div`
                         margin-top: 1rem;
                     }
                 }
+            }
+        }
+        .add-box {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            &-btn {
+                border: none;
+                background-color: inherit;
+                color: var(--color-secondary);
+                font-weight: 700;
             }
         }
         .action-btns {

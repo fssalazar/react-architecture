@@ -61,7 +61,6 @@ export function HandlePointOfSale({
                 },
             })
         }
-        console.log('lala')
     }, 500)
 
     async function handlePointOfSale(data: handlePointOfSaleDto) {
@@ -90,13 +89,20 @@ export function HandlePointOfSale({
             const createPointOfSaleData: handlePointOfSaleDto = {
                 ...data,
             }
+            if (cepFormatted && data.address?.number === '') {
+                toast.warning(
+                    'Verifique se você preencheu o número corretamente'
+                )
+                setBusyBtn(false)
+                return
+            }
             const response = await createPointOfSale(createPointOfSaleData)
             if (response) {
                 toast.success(`Ponto de venda ${data.label} criado com sucesso`)
             }
             setBusyBtn(false)
         } catch (error) {
-            toast.info(
+            toast.warning(
                 'Verifique se todos os campos foram preenchidos corretamente'
             )
             setBusyBtn(false)
@@ -184,15 +190,30 @@ export function HandlePointOfSale({
                                         }
                                     }}
                                 />
-                                <Input name="street" label="Endereço" />
+                                <Input
+                                    name="street"
+                                    label={pointOfSale ? '' : 'Endereço'}
+                                    disabled={!cepFormatted}
+                                />
                                 <Input name="number" label="Número" />
                             </div>
                             <div className="grid grid-1-1">
-                                <Input name="neighborhood" label="Bairro" />
-                                <Input name="city" label="Cidade" />
+                                <Input
+                                    name="neighborhood"
+                                    label={pointOfSale ? '' : 'Bairro'}
+                                    disabled={!cepFormatted}
+                                />
+                                <Input
+                                    name="city"
+                                    label={pointOfSale ? '' : 'Cidade'}
+                                    disabled={!cepFormatted}
+                                />
                             </div>
                             <div className="grid grid-1-1">
-                                <Input name="state" label="Estado" />
+                                <Input
+                                    name="state"
+                                    label={pointOfSale ? '' : 'Estado'}
+                                />
                                 <Input name="complement" label="Complemento" />
                             </div>
                         </Scope>

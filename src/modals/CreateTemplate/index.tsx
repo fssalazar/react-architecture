@@ -2,10 +2,14 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/require-default-props */
-import React from 'react'
+import React, { useState } from 'react'
 import { RiArrowUpSLine } from 'react-icons/ri'
 import ModalContainer from 'react-modal'
+import { toast } from 'react-toastify'
+import { Button } from '../../components/Button'
 import { SimpleInput } from '../../components/SimpleInput'
+import { Template } from '../../entities/template'
+import { useUser } from '../../hooks/use-user'
 
 import { CreateTemplateContent } from './styles'
 
@@ -15,6 +19,35 @@ interface Props {
 }
 
 export function CreateTemplate({ isOpen, onRequestClose }: Props) {
+    // hooks
+    const { createTemplate } = useUser()
+    // state
+    const [busyBtn, setBusyBtn] = useState(false)
+    const [template, setTemplate] = useState<Template>({
+        label: '',
+        permissions: {
+            listMachines: false,
+            manageMachines: false,
+            operateMachineStock: false,
+            fixMachineStock: false,
+            remoteCredit: false,
+            listPointsOfSale: false,
+            managePointsOfSale: false,
+            listCategories: false,
+            manageCategories: false,
+            listTelemetries: false,
+            operateOwnerStock: false,
+            fixOwnerStock: false,
+            listInventory: false,
+            generateReports: false,
+            accessOperationalInfo: false,
+            listUsers: false,
+            manageUsers: false,
+            listCollections: false,
+            manageCollections: false,
+        },
+    })
+
     return (
         <ModalContainer
             isOpen={isOpen}
@@ -38,6 +71,13 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                         name="label"
                         type="text"
                         label="Nome do cargo"
+                        value={template.label}
+                        onChange={(e) => {
+                            setTemplate({
+                                label: e.target.value,
+                                permissions: template?.permissions,
+                            })
+                        }}
                     />
                 </div>
                 {/* ------------    MÁQUINAS -------------------- */}
@@ -56,7 +96,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                     </div>
                     <div className="body-content">
                         <label htmlFor="listMachines" className="template-item">
-                            <input type="checkbox" id="listMachines" />
+                            <input
+                                type="checkbox"
+                                id="listMachines"
+                                checked={template.permissions.listMachines}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listMachines: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Acessar máquinas
@@ -70,7 +123,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="manageMachines"
                             className="template-item"
                         >
-                            <input type="checkbox" id="manageMachines" />
+                            <input
+                                type="checkbox"
+                                id="manageMachines"
+                                checked={template.permissions.manageMachines}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            manageMachines: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Gerenciar máquinas
@@ -85,7 +151,23 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="operateMachineStock"
                             className="template-item"
                         >
-                            <input type="checkbox" id="operateMachineStock" />
+                            <input
+                                type="checkbox"
+                                id="operateMachineStock"
+                                checked={
+                                    template.permissions.operateMachineStock
+                                }
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            operateMachineStock:
+                                                e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Abastecer máquinas
@@ -102,7 +184,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="fixMachineStock"
                             className="template-item"
                         >
-                            <input type="checkbox" id="fixMachineStock" />
+                            <input
+                                type="checkbox"
+                                id="fixMachineStock"
+                                checked={template.permissions.fixMachineStock}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            fixMachineStock: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Corrigir estoque
@@ -117,7 +212,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             </div>
                         </label>
                         <label htmlFor="remoteCredit" className="template-item">
-                            <input type="checkbox" id="remoteCredit" />
+                            <input
+                                type="checkbox"
+                                id="remoteCredit"
+                                checked={template.permissions.remoteCredit}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            remoteCredit: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Enviar crédito remoto
@@ -149,7 +257,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="listPointsOfSale"
                             className="template-item"
                         >
-                            <input type="checkbox" id="listPointsOfSale" />
+                            <input
+                                type="checkbox"
+                                id="listPointsOfSale"
+                                checked={template.permissions.listPointsOfSale}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listPointsOfSale: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Acessar pontos de venda
@@ -164,7 +285,23 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="managePointsOfSale"
                             className="template-item"
                         >
-                            <input type="checkbox" id="managePointsOfSale" />
+                            <input
+                                type="checkbox"
+                                id="managePointsOfSale"
+                                checked={
+                                    template.permissions.managePointsOfSale
+                                }
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            managePointsOfSale:
+                                                e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Gerenciar pontos de venda
@@ -196,7 +333,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="listCategories"
                             className="template-item"
                         >
-                            <input type="checkbox" id="listCategories" />
+                            <input
+                                type="checkbox"
+                                id="listCategories"
+                                checked={template.permissions.listCategories}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listCategories: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Acessar categorias
@@ -211,7 +361,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="manageCategories"
                             className="template-item"
                         >
-                            <input type="checkbox" id="manageCategories" />
+                            <input
+                                type="checkbox"
+                                id="manageCategories"
+                                checked={template.permissions.manageCategories}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            manageCategories: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Gerenciar categorias
@@ -223,36 +386,49 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             </div>
                         </label>
                     </div>
-                    {/* // ------------ TELEMETRIA ------------------ */}
-                    <div className="template-box">
-                        <div className="header">
-                            <div className="title">
-                                <h1 className="f16-700-dark">Telemetrias</h1>
-                                <h2 className="f12-600-gray">
-                                    Permissões referentes às telemetrias.
+                </div>
+                {/* // ------------ TELEMETRIA ------------------ */}
+                <div className="template-box">
+                    <div className="header">
+                        <div className="title">
+                            <h1 className="f16-700-dark">Telemetrias</h1>
+                            <h2 className="f12-600-gray">
+                                Permissões referentes às telemetrias.
+                            </h2>
+                        </div>
+                        <button type="button">
+                            <RiArrowUpSLine />
+                        </button>
+                    </div>
+                    <div className="body-content">
+                        <label
+                            htmlFor="listTelemetries"
+                            className="template-item"
+                        >
+                            <input
+                                type="checkbox"
+                                id="listTelemetries"
+                                checked={template.permissions.listTelemetries}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listTelemetries: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
+                            <div className="info">
+                                <h2 className="f14-700-dark">
+                                    Acessar telemetrias
                                 </h2>
+                                <p className="f12-500-gray">
+                                    O usuário poderá acessar a página de
+                                    telemetrias.
+                                </p>
                             </div>
-                            <button type="button">
-                                <RiArrowUpSLine />
-                            </button>
-                        </div>
-                        <div className="body-content">
-                            <label
-                                htmlFor="listTelemetries"
-                                className="template-item"
-                            >
-                                <input type="checkbox" id="listTelemetries" />
-                                <div className="info">
-                                    <h2 className="f14-700-dark">
-                                        Acessar telemetrias
-                                    </h2>
-                                    <p className="f12-500-gray">
-                                        O usuário poderá acessar a página de
-                                        telemetrias.
-                                    </p>
-                                </div>
-                            </label>
-                        </div>
+                        </label>
                     </div>
                 </div>
                 {/* // ------------ FABRICA ------------------ */}
@@ -274,7 +450,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="operateOwnerStock"
                             className="template-item"
                         >
-                            <input type="checkbox" id="operateOwnerStock" />
+                            <input
+                                type="checkbox"
+                                id="operateOwnerStock"
+                                checked={template.permissions.operateOwnerStock}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            operateOwnerStock: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Gerenciar estoque
@@ -290,7 +479,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="fixOwnerStock"
                             className="template-item"
                         >
-                            <input type="checkbox" id="fixOwnerStock" />
+                            <input
+                                type="checkbox"
+                                id="fixOwnerStock"
+                                checked={template.permissions.fixOwnerStock}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            fixOwnerStock: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Corrigir estoque
@@ -322,7 +524,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="listInventory"
                             className="template-item"
                         >
-                            <input type="checkbox" id="listInventory" />
+                            <input
+                                type="checkbox"
+                                id="listInventory"
+                                checked={template.permissions.listInventory}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listInventory: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Acessar inventário
@@ -356,7 +571,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="generateReports"
                             className="template-item"
                         >
-                            <input type="checkbox" id="generateReports" />
+                            <input
+                                type="checkbox"
+                                id="generateReports"
+                                checked={template.permissions.generateReports}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            generateReports: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Gerar relatórios e acessar painel financeiro
@@ -372,7 +600,23 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="accessOperationalInfo"
                             className="template-item"
                         >
-                            <input type="checkbox" id="accessOperationalInfo" />
+                            <input
+                                type="checkbox"
+                                id="accessOperationalInfo"
+                                checked={
+                                    template.permissions.accessOperationalInfo
+                                }
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            accessOperationalInfo:
+                                                e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Acessar painel operacional
@@ -401,7 +645,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                     </div>
                     <div className="body-content">
                         <label htmlFor="listUsers" className="template-item">
-                            <input type="checkbox" id="listUsers" />
+                            <input
+                                type="checkbox"
+                                id="listUsers"
+                                checked={template.permissions.listUsers}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listUsers: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Acessar lista de usuários
@@ -413,7 +670,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             </div>
                         </label>
                         <label htmlFor="manageUsers" className="template-item">
-                            <input type="checkbox" id="manageUsers" />
+                            <input
+                                type="checkbox"
+                                id="manageUsers"
+                                checked={template.permissions.manageUsers}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            manageUsers: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Gerenciar usuários
@@ -444,7 +714,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="listCollections"
                             className="template-item"
                         >
-                            <input type="checkbox" id="listCollections" />
+                            <input
+                                type="checkbox"
+                                id="listCollections"
+                                checked={template.permissions.listCollections}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            listCollections: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Verificar coletas
@@ -459,7 +742,20 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             htmlFor="manageCollections"
                             className="template-item"
                         >
-                            <input type="checkbox" id="manageCollections" />
+                            <input
+                                type="checkbox"
+                                id="manageCollections"
+                                checked={template.permissions.manageCollections}
+                                onChange={(e) =>
+                                    setTemplate({
+                                        ...template,
+                                        permissions: {
+                                            ...template.permissions,
+                                            manageCollections: e.target.checked,
+                                        },
+                                    })
+                                }
+                            />
                             <div className="info">
                                 <h2 className="f14-700-dark">
                                     Criar, editar e listar coletas
@@ -471,6 +767,39 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             </div>
                         </label>
                     </div>
+                </div>
+                <div className="btns">
+                    <Button
+                        text="Cancelar"
+                        type="button"
+                        buttonType="TEXT"
+                        color="WARNING"
+                        onClick={() => onRequestClose()}
+                    />
+                    <Button
+                        text="Salvar"
+                        type="button"
+                        buttonType="FILLED"
+                        color="SECONDARY"
+                        busy={busyBtn}
+                        onClick={() => {
+                            setBusyBtn(true)
+                            ;(async () => {
+                                const response = await createTemplate(template)
+                                if (response !== 201) {
+                                    toast.error(
+                                        'Não foi possível criar esse cargo, verifique os campos preenchidos e tente novamente'
+                                    )
+                                    setBusyBtn(false)
+                                    return
+                                }
+                                toast.success(
+                                    `Cargo ${template.label} criado com sucesso`
+                                )
+                            })()
+                            setBusyBtn(false)
+                        }}
+                    />
                 </div>
             </CreateTemplateContent>
         </ModalContainer>

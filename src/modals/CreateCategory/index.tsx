@@ -34,7 +34,12 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
     )
     const [category, setCategory] = useState<CreateCategoryDto>()
     const [typeChosen, setTypeChosen] = useState<
-        'GRUA' | 'MULTI_BOXES' | 'MULTI_STOCKS' | 'NO_OUT' | undefined
+        | 'GRUA'
+        | 'MULTI_BOXES'
+        | 'MULTI_STOCKS'
+        | 'NO_OUT'
+        | 'CUSTOM'
+        | undefined
     >()
 
     const pin = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -242,7 +247,55 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     <img src={CategoryImg} alt="" />
                                 </div>
                             </button>
-                            <button type="button" className="category-type">
+                            <button
+                                type="button"
+                                className="category-type"
+                                onClick={() => {
+                                    setCategory({
+                                        label: '',
+                                        sharedSupply: false,
+                                        sharedVault: false,
+                                        boxes: [
+                                            {
+                                                label: `Cabine ${category?.boxes.length}`,
+                                                counters: [
+                                                    {
+                                                        isDigital: true,
+                                                        isMechanical: true,
+                                                        pin: 2,
+                                                        counterTypeId:
+                                                            counterTypes.find(
+                                                                (c) =>
+                                                                    c.label ===
+                                                                    'Noteiro'
+                                                            )?.id || '',
+                                                    },
+                                                    {
+                                                        isDigital: true,
+                                                        isMechanical: true,
+                                                        pin: 3,
+                                                        counterTypeId:
+                                                            counterTypes.find(
+                                                                (c) =>
+                                                                    c.label ===
+                                                                    'Prêmio'
+                                                            )?.id || '',
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    })
+                                    setTypeChosen('CUSTOM')
+                                }}
+                                style={
+                                    typeChosen === 'CUSTOM'
+                                        ? {
+                                              border: '3px solid #ccd8ff',
+                                              borderRadius: '0.8rem',
+                                          }
+                                        : {}
+                                }
+                            >
                                 <div className="title">
                                     <h2 className="f14-700-dark">
                                         Criar uma nova
@@ -437,6 +490,26 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                             className="category-box"
                                             key={v4()}
                                         >
+                                            {typeChosen === 'CUSTOM' && (
+                                                <button
+                                                    type="button"
+                                                    className="delete-box"
+                                                    onClick={() =>
+                                                        setCategory((state) => {
+                                                            state = category
+                                                            state.boxes.splice(
+                                                                index,
+                                                                1
+                                                            )
+                                                            return {
+                                                                ...state,
+                                                            }
+                                                        })
+                                                    }
+                                                >
+                                                    <FiXCircle />
+                                                </button>
+                                            )}
                                             <div className="header">
                                                 <div className="title">
                                                     <h1 className="f16-700-dark">
@@ -694,6 +767,55 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                         </div>
                                     )
                                 })}
+                            {typeChosen === 'CUSTOM' && (
+                                <div className="add-box">
+                                    <button
+                                        className="add-box-btn"
+                                        type="button"
+                                        onClick={() => {
+                                            if (category) {
+                                                setCategory((state) => {
+                                                    state = category
+                                                    state.boxes.push({
+                                                        label: `Cabine ${category?.boxes.length}`,
+                                                        counters: [
+                                                            {
+                                                                isDigital: true,
+                                                                isMechanical:
+                                                                    true,
+                                                                pin: 2,
+                                                                counterTypeId:
+                                                                    counterTypes.find(
+                                                                        (c) =>
+                                                                            c.label ===
+                                                                            'Noteiro'
+                                                                    )?.id || '',
+                                                            },
+                                                            {
+                                                                isDigital: true,
+                                                                isMechanical:
+                                                                    true,
+                                                                pin: 3,
+                                                                counterTypeId:
+                                                                    counterTypes.find(
+                                                                        (c) =>
+                                                                            c.label ===
+                                                                            'Prêmio'
+                                                                    )?.id || '',
+                                                            },
+                                                        ],
+                                                    })
+                                                    return {
+                                                        ...state,
+                                                    }
+                                                })
+                                            }
+                                        }}
+                                    >
+                                        Adicionar cabine
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="action-btns">
                                 <Button

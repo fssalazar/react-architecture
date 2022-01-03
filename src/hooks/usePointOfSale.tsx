@@ -84,15 +84,22 @@ export function PointOfSaleProvider({ children }: Props) {
     }
 
     async function createPointOfSale(data: handlePointOfSaleDto) {
+        if (data.address && data.address.complement === '') {
+            data.address.complement = undefined
+        }
+        if (data.manager === '') {
+            data.manager = undefined
+        }
+        if (data.phoneNumber === '') {
+            data.phoneNumber = undefined
+        }
         try {
             const response = await api.post('points-of-sale', data, {
                 headers: {
                     authorization: `Bearer ${token}`,
                 },
             })
-            if (data.manager === '') {
-                delete data.manager
-            }
+
             setPointsOfSale([response.data, ...pointsOfSale])
             return response.data
         } catch (error) {
@@ -102,6 +109,15 @@ export function PointOfSaleProvider({ children }: Props) {
     }
 
     async function editPointOfSale(data: handlePointOfSaleDto, id: string) {
+        if (data.address && data.address.complement === '') {
+            data.address.complement = undefined
+        }
+        if (data.manager === '') {
+            data.manager = undefined
+        }
+        if (data.phoneNumber === '') {
+            data.phoneNumber = undefined
+        }
         try {
             const response = await api.patch(`points-of-sale/${id}`, data, {
                 headers: {

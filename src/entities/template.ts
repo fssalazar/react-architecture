@@ -21,7 +21,5 @@ export interface Template {
         manageUsers: boolean
         listCollections: boolean
         manageCollections: boolean
-        // -----------
-        manageProducts: boolean
     }
 }

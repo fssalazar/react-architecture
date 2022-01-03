@@ -7,25 +7,15 @@ import { toast } from 'react-toastify'
 import { Button } from '../../components/Button'
 import { SelectInput } from '../../components/SelectInput'
 import { MainContainer } from '../../container/MainContainer'
-import { Box, Category } from '../../entities/category'
+import { Template } from '../../entities/template'
 import { useUser } from '../../hooks/use-user'
-import { useCategory } from '../../hooks/useCategory'
 import { CreateTemplate } from '../../modals/CreateTemplate'
 import { TemplatesContainer } from './styles'
 
 export function TemplatesPage() {
-    // hooks
-    const {
-        categories,
-        editCategory,
-        getCategories,
-        counterTypes,
-        getCounterTypes,
-        deleteCategory,
-    } = useCategory()
-    const { templates, editTemplate, getTemplates } = useUser()
+    const { templates, editTemplate, getTemplates, deleteTemplate } = useUser()
     // state
-    const [selectedCategory, setSelectedCategory] = useState<Category>()
+    const [selectedTemplate, setSelectedTemplate] = useState<Template>()
     const [openCreateTemplate, setOpenCreateTemplate] = useState(false)
     const [canEdit, setCanEdit] = useState(false)
     const [busy, setBusy] = useState(false)
@@ -38,8 +28,6 @@ export function TemplatesPage() {
     useEffect(() => {
         setBusy(true)
         ;(async () => {
-            await getCategories()
-            await getCounterTypes()
             await getTemplates()
             setBusy(false)
         })()
@@ -56,47 +44,37 @@ export function TemplatesPage() {
                 <div className="header-content">
                     <div className="select-category">
                         <SelectInput
-                            name="categories"
-                            placeholder="Selecione uma categoria"
+                            name="templates"
+                            placeholder="Selecione um cargo"
                             onChange={(e) => {
                                 if (e) {
-                                    const temp = categories.find(
+                                    const temp = templates.find(
                                         (c) => c.id === e.value
                                     )
-                                    const boxes: Box[] = []
-                                    temp?.boxes.forEach((b) => {
-                                        boxes.push({
-                                            id: b.id,
-                                            label: b.label,
-                                            counters: [...b.counters],
-                                        })
-                                    })
+
                                     if (temp) {
-                                        setSelectedCategory({
-                                            ...temp,
-                                            boxes,
-                                        })
+                                        setSelectedTemplate(temp)
                                     }
                                 }
                             }}
-                            options={categories.map((category) => {
+                            options={templates.map((template) => {
                                 return {
-                                    label: category.label,
-                                    value: category.id,
+                                    label: template.label,
+                                    value: template.id,
                                 }
                             })}
                         />
                     </div>
                     {!canEdit ? (
                         <div className="header-btns">
-                            {selectedCategory && (
+                            {selectedTemplate && (
                                 <>
                                     <Button
                                         type="button"
                                         buttonType="BORDERED"
                                         color="PRIMARY"
                                         text="Editar"
-                                        disabled={!selectedCategory}
+                                        disabled={!selectedTemplate}
                                         onClick={() => {
                                             setCanEdit(true)
                                         }}
@@ -106,15 +84,17 @@ export function TemplatesPage() {
                                         buttonType="TEXT"
                                         color="WARNING"
                                         text="Deletar"
-                                        disabled={!selectedCategory}
+                                        disabled={!selectedTemplate}
                                         onClick={async () => {
                                             const response =
-                                                await deleteCategory(
-                                                    selectedCategory.id
+                                                await deleteTemplate(
+                                                    selectedTemplate.id
+                                                        ? selectedTemplate.id
+                                                        : ''
                                                 )
                                             if (response) {
                                                 toast.success(
-                                                    `Categoria ${selectedCategory.label} deletada com sucesso`
+                                                    `Cargo ${selectedTemplate.label} deletado com sucesso`
                                                 )
                                             }
                                         }}
@@ -139,23 +119,13 @@ export function TemplatesPage() {
                                 color="WARNING"
                                 text="Cancelar"
                                 onClick={() => {
-                                    if (selectedCategory) {
-                                        const temp = categories.find(
-                                            (c) => c.id === selectedCategory.id
+                                    if (selectedTemplate) {
+                                        const temp = templates.find(
+                                            (c) => c.id === selectedTemplate.id
                                         )
-                                        const boxes: Box[] = []
-                                        temp?.boxes.forEach((b) => {
-                                            boxes.push({
-                                                id: b.id,
-                                                label: b.label,
-                                                counters: [...b.counters],
-                                            })
-                                        })
+
                                         if (temp) {
-                                            setSelectedCategory({
-                                                ...temp,
-                                                boxes,
-                                            })
+                                            setSelectedTemplate(temp)
                                         }
                                     }
                                     setCanEdit(false)
@@ -167,14 +137,16 @@ export function TemplatesPage() {
                                 color="SECONDARY"
                                 text="Salvar"
                                 onClick={async () => {
-                                    if (selectedCategory) {
-                                        const response = await editCategory(
-                                            selectedCategory.boxes,
-                                            selectedCategory.id
+                                    if (selectedTemplate) {
+                                        const response = await editTemplate(
+                                            selectedTemplate,
+                                            selectedTemplate.id
+                                                ? selectedTemplate.id
+                                                : ''
                                         )
                                         if (response) {
                                             toast.success(
-                                                `Categoria ${selectedCategory.label} editada com sucesso`
+                                                `Cargo ${selectedTemplate.label} editado com sucesso`
                                             )
                                         }
                                     }
@@ -185,14 +157,14 @@ export function TemplatesPage() {
                 </div>
 
                 <div className="template">
-                    {selectedCategory && (
+                    {selectedTemplate && (
                         <div className="template-container">
                             <div className="template-header">
                                 <h1 className="template-name">
-                                    {selectedCategory.label}
+                                    {selectedTemplate.label}
                                 </h1>
                             </div>
-                            {selectedCategory && (
+                            {selectedTemplate && (
                                 <>
                                     {/* ------------    MÁQUINAS -------------------- */}
                                     <div className="template-box">
@@ -218,6 +190,23 @@ export function TemplatesPage() {
                                                 <input
                                                     type="checkbox"
                                                     id="listMachines"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listMachines
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listMachines:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -231,11 +220,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="manageMachines"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="manageMachines"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .manageMachines
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                manageMachines:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -250,11 +256,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="operateMachineStock"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="operateMachineStock"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .operateMachineStock
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                operateMachineStock:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -273,11 +296,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="fixMachineStock"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="fixMachineStock"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .fixMachineStock
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                fixMachineStock:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -297,11 +337,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="remoteCredit"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="remoteCredit"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .remoteCredit
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                remoteCredit:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -336,11 +393,28 @@ export function TemplatesPage() {
                                         <div className="body-content">
                                             <label
                                                 htmlFor="listPointsOfSale"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="listPointsOfSale"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listPointsOfSale
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listPointsOfSale:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -355,11 +429,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="managePointsOfSale"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="managePointsOfSale"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .managePointsOfSale
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                managePointsOfSale:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -395,11 +486,28 @@ export function TemplatesPage() {
                                         <div className="body-content">
                                             <label
                                                 htmlFor="listCategories"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="listCategories"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listCategories
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listCategories:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -413,11 +521,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="manageCategories"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="manageCategories"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .manageCategories
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                manageCategories:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -432,43 +557,59 @@ export function TemplatesPage() {
                                                 </div>
                                             </label>
                                         </div>
-                                        {/* // ------------ TELEMETRIA ------------------ */}
-                                        <div className="template-box">
-                                            <div className="header">
-                                                <div className="title">
-                                                    <h1 className="f16-700-dark">
-                                                        Telemetrias
-                                                    </h1>
-                                                    <h2 className="f12-600-gray">
-                                                        Permissões referentes às
-                                                        telemetrias.
+                                    </div>
+                                    {/* // ------------ TELEMETRIA ------------------ */}
+                                    <div className="template-box">
+                                        <div className="header">
+                                            <div className="title">
+                                                <h1 className="f16-700-dark">
+                                                    Telemetrias
+                                                </h1>
+                                                <h2 className="f12-600-gray">
+                                                    Permissões referentes às
+                                                    telemetrias.
+                                                </h2>
+                                            </div>
+                                            <button type="button">
+                                                <RiArrowUpSLine />
+                                            </button>
+                                        </div>
+                                        <div className="body-content">
+                                            <label
+                                                htmlFor="listTelemetries"
+                                                className="selectedTemplate-item"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    id="listTelemetries"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listTelemetries
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listTelemetries:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
+                                                />
+                                                <div className="info">
+                                                    <h2 className="f14-700-dark">
+                                                        Acessar telemetrias
                                                     </h2>
+                                                    <p className="f12-500-gray">
+                                                        O usuário poderá acessar
+                                                        a página de telemetrias.
+                                                    </p>
                                                 </div>
-                                                <button type="button">
-                                                    <RiArrowUpSLine />
-                                                </button>
-                                            </div>
-                                            <div className="body-content">
-                                                <label
-                                                    htmlFor="listTelemetries"
-                                                    className="template-item"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        id="listTelemetries"
-                                                    />
-                                                    <div className="info">
-                                                        <h2 className="f14-700-dark">
-                                                            Acessar telemetrias
-                                                        </h2>
-                                                        <p className="f12-500-gray">
-                                                            O usuário poderá
-                                                            acessar a página de
-                                                            telemetrias.
-                                                        </p>
-                                                    </div>
-                                                </label>
-                                            </div>
+                                            </label>
                                         </div>
                                     </div>
                                     {/* // ------------ FABRICA ------------------ */}
@@ -491,11 +632,28 @@ export function TemplatesPage() {
                                         <div className="body-content">
                                             <label
                                                 htmlFor="operateOwnerStock"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="operateOwnerStock"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .operateOwnerStock
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                operateOwnerStock:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -513,11 +671,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="fixOwnerStock"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="fixOwnerStock"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .fixOwnerStock
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                fixOwnerStock:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -553,11 +728,28 @@ export function TemplatesPage() {
                                         <div className="body-content">
                                             <label
                                                 htmlFor="listInventory"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="listInventory"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listInventory
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listInventory:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -594,11 +786,28 @@ export function TemplatesPage() {
                                         <div className="body-content">
                                             <label
                                                 htmlFor="generateReports"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="generateReports"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .generateReports
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                generateReports:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -618,11 +827,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="accessOperationalInfo"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="accessOperationalInfo"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .accessOperationalInfo
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                accessOperationalInfo:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -659,11 +885,28 @@ export function TemplatesPage() {
                                         <div className="body-content">
                                             <label
                                                 htmlFor="listUsers"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="listUsers"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listUsers
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listUsers:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -679,11 +922,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="manageUsers"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="manageUsers"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .manageUsers
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                manageUsers:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -723,6 +983,23 @@ export function TemplatesPage() {
                                                 <input
                                                     type="checkbox"
                                                     id="listCollections"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .listCollections
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                listCollections:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
@@ -737,11 +1014,28 @@ export function TemplatesPage() {
                                             </label>
                                             <label
                                                 htmlFor="manageCollections"
-                                                className="template-item"
+                                                className="selectedTemplate-item"
                                             >
                                                 <input
                                                     type="checkbox"
                                                     id="manageCollections"
+                                                    checked={
+                                                        selectedTemplate
+                                                            .permissions
+                                                            .manageCollections
+                                                    }
+                                                    disabled={!canEdit}
+                                                    onChange={(e) =>
+                                                        setSelectedTemplate({
+                                                            ...selectedTemplate,
+                                                            permissions: {
+                                                                ...selectedTemplate.permissions,
+                                                                manageCollections:
+                                                                    e.target
+                                                                        .checked,
+                                                            },
+                                                        })
+                                                    }
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">

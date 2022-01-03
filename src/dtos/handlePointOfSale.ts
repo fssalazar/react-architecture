@@ -10,5 +10,6 @@ export interface handlePointOfSaleDto {
         neighborhood: string
         street: string
         number: string
+        complement?: string
     }
 }

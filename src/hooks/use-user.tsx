@@ -4,6 +4,8 @@ import { api } from '../service/api'
 import { ChangePasswordDto } from '../dtos/changePassword'
 import { useAuth } from './use-auth'
 import { Template } from '../entities/template'
+import { HandleUserDto } from '../dtos/handleUser'
+import { GeneralUser } from '../entities/generalUser'
 
 interface UserContext {
     getUser(): Promise<any | undefined>
@@ -12,7 +14,13 @@ interface UserContext {
     getTemplates(): Promise<number | undefined>
     createTemplate(data: Template): Promise<number | undefined>
     editTemplate(data: Template, id: string): Promise<number | undefined>
+    deleteTemplate(id: string): Promise<number | undefined>
+    getUsers(limit?: number, offset?: number): Promise<number | undefined>
+    createUser(data: HandleUserDto): Promise<number | undefined>
+    chooseUserToEdit(params: GeneralUser | undefined): void
+    userToEdit?: GeneralUser
     templates: Template[]
+    users: GeneralUser[]
 }
 
 interface Props {
@@ -25,7 +33,10 @@ export function UserProvider({ children }: Props) {
     // hook
     const { token } = useAuth()
     const [templates, setTemplates] = useState<Template[]>([])
+    const [users, setUsers] = useState<GeneralUser[]>([])
+
     // State
+    const [userToEdit, setUserToEdit] = useState<GeneralUser>()
 
     async function getUser() {
         try {
@@ -82,7 +93,7 @@ export function UserProvider({ children }: Props) {
                     authorization: `Bearer ${token}`,
                 },
             })
-            setTemplates([...response.data])
+            setTemplates([response.data, ...templates])
             return response.status
         } catch (error) {
             return undefined
@@ -90,12 +101,20 @@ export function UserProvider({ children }: Props) {
     }
 
     async function editTemplate(data: Template, id: string) {
+        const editTemplateData: Template = {
+            label: data.label,
+            permissions: data.permissions,
+        }
         try {
-            const response = await api.patch(`/users/templates/${id}`, data, {
-                headers: {
-                    authorization: `Bearer ${token}`,
-                },
-            })
+            const response = await api.patch(
+                `/users/templates/${id}`,
+                editTemplateData,
+                {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    },
+                }
+            )
             setTemplates((state) => {
                 const index = templates.findIndex((t) => t.id === id)
                 if (index) {
@@ -108,6 +127,59 @@ export function UserProvider({ children }: Props) {
             return undefined
         }
     }
+    async function deleteTemplate(id: string) {
+        try {
+            const response = await api.delete(`/users/templates/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setTemplates((state) => {
+                const index = templates.findIndex((t) => t.id === id)
+                if (index) {
+                    state.slice(index, 1)
+                }
+                return [...state]
+            })
+            return response.status
+        } catch (error) {
+            return undefined
+        }
+    }
+
+    async function getUsers() {
+        try {
+            const response = await api.get<GeneralUser[]>('users', {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setUsers(response.data)
+            return response.status
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function createUser(data: HandleUserDto) {
+        try {
+            const response = await api.post('users', data, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            console.log(response.data)
+            return response.status
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    function chooseUserToEdit(params: GeneralUser | undefined) {
+        setUserToEdit(params)
+    }
 
     return (
         <UserContext.Provider
@@ -118,7 +190,13 @@ export function UserProvider({ children }: Props) {
                 getTemplates,
                 createTemplate,
                 editTemplate,
+                deleteTemplate,
+                getUsers,
+                createUser,
+                chooseUserToEdit,
+                userToEdit,
                 templates,
+                users,
             }}
         >
             {children}
