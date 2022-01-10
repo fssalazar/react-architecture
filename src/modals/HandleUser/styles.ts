@@ -6,8 +6,47 @@ export const CreateUserContent = styled.div`
         margin-bottom: 4rem;
     }
     form {
+        .form-avatar {
+            display: flex;
+            align-items: stretch;
+            justify-content: start;
+            .form {
+                width: 100%;
+            }
+            .avatar {
+                width: 40rem;
+                border-radius: 2.4rem;
+                background-color: var(--color-secondary);
+                margin-left: 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 5.4rem;
+                color: #fff;
+            }
+        }
         div {
             margin-bottom: 1rem;
+        }
+        .input-select {
+            width: 30rem;
+        }
+        .create-new-template {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            p {
+                margin-left: 1rem;
+                font-size: 1.4rem;
+                color: var(--color-gray);
+            }
+            button {
+                background-color: inherit;
+                border: none;
+                margin-left: 0.3rem;
+                font-size: 1.4rem;
+                color: var(--color-primary);
+            }
         }
     }
     .btns {
@@ -16,6 +55,11 @@ export const CreateUserContent = styled.div`
         justify-content: space-between;
         button {
             width: 10rem;
+        }
+        .save-delete {
+            button {
+                margin-left: 1rem;
+            }
         }
     }
 `

@@ -92,6 +92,11 @@ export function TemplatesPage() {
                                                         ? selectedTemplate.id
                                                         : ''
                                                 )
+                                            if (!response) {
+                                                toast.error(
+                                                    `O cargo ${selectedTemplate.label} está sendo utilizado por um usuário`
+                                                )
+                                            }
                                             if (response) {
                                                 toast.success(
                                                     `Cargo ${selectedTemplate.label} deletado com sucesso`

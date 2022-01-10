@@ -31,7 +31,6 @@ export function SinglePointOfSale({ pointOfSale }: Props) {
                 {pointOfSale.phoneNumber ? pointOfSale.phoneNumber : ''}
             </h1>
             <h1 className="f12-600-gray "> </h1>
-            <h1 className="f12-600-gray "> </h1>
         </SinglePointOfSaleContainer>
     )
 }

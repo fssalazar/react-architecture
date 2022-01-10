@@ -24,6 +24,7 @@ export interface GeneralUser {
         operateOwnerStock: boolean
         remoteCredit: boolean
         templateId: string
+        label: string
     }
     type: string
 }

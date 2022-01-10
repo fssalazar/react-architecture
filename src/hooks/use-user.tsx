@@ -15,12 +15,19 @@ interface UserContext {
     createTemplate(data: Template): Promise<number | undefined>
     editTemplate(data: Template, id: string): Promise<number | undefined>
     deleteTemplate(id: string): Promise<number | undefined>
-    getUsers(limit?: number, offset?: number): Promise<number | undefined>
+    getUsers(
+        limit?: number,
+        offset?: number,
+        search?: string
+    ): Promise<number | undefined>
     createUser(data: HandleUserDto): Promise<number | undefined>
     chooseUserToEdit(params: GeneralUser | undefined): void
+    editUser(templateId: string, id: string): Promise<number | undefined>
+    deleteUser(id: string): Promise<number | undefined>
     userToEdit?: GeneralUser
     templates: Template[]
     users: GeneralUser[]
+    count?: number
 }
 
 interface Props {
@@ -37,6 +44,7 @@ export function UserProvider({ children }: Props) {
 
     // State
     const [userToEdit, setUserToEdit] = useState<GeneralUser>()
+    const [count, setCount] = useState<number>()
 
     async function getUser() {
         try {
@@ -136,7 +144,7 @@ export function UserProvider({ children }: Props) {
             })
             setTemplates((state) => {
                 const index = templates.findIndex((t) => t.id === id)
-                if (index) {
+                if (index !== undefined) {
                     state.slice(index, 1)
                 }
                 return [...state]
@@ -147,14 +155,29 @@ export function UserProvider({ children }: Props) {
         }
     }
 
-    async function getUsers() {
+    async function getUsers(limit?: number, offset?: number, search?: string) {
+        if (!limit) {
+            limit = 10
+        }
+        if (!offset) {
+            offset = 0
+        }
         try {
-            const response = await api.get<GeneralUser[]>('users', {
+            const response = await api.get<{
+                count: number
+                users: GeneralUser[]
+            }>('users', {
                 headers: {
                     authorization: `Bearer ${token}`,
                 },
+                params: {
+                    limit,
+                    offset,
+                    search_string: search,
+                },
             })
-            setUsers(response.data)
+            setUsers(response.data.users)
+            setCount(response.data.count)
             return response.status
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')
@@ -169,10 +192,55 @@ export function UserProvider({ children }: Props) {
                     authorization: `Bearer ${token}`,
                 },
             })
-            console.log(response.data)
+            setUsers([...users, response.data])
             return response.status
         } catch (error) {
             // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function editUser(templateId: string, id: string) {
+        try {
+            const response = await api.patch<GeneralUser>(
+                `users/${id}`,
+                { userTemplateId: templateId },
+                {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    },
+                }
+            )
+            setUsers((state) => {
+                const index = state.findIndex((s) => s.id === id)
+                if (index !== undefined) {
+                    state[index] = response.data
+                }
+                return [...state]
+            })
+            return response.status
+        } catch (error) {
+            // localStorage.removeItem('@sttigma:token')
+            return undefined
+        }
+    }
+
+    async function deleteUser(id: string) {
+        try {
+            const response = await api.delete(`/users/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setUsers((state) => {
+                const index = templates.findIndex((t) => t.id === id)
+                if (index !== undefined) {
+                    state.slice(index, 1)
+                }
+                return [...state]
+            })
+            return response.status
+        } catch (error) {
             return undefined
         }
     }
@@ -194,9 +262,12 @@ export function UserProvider({ children }: Props) {
                 getUsers,
                 createUser,
                 chooseUserToEdit,
+                editUser,
+                deleteUser,
                 userToEdit,
                 templates,
                 users,
+                count,
             }}
         >
             {children}

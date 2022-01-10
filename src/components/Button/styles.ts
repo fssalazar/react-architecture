@@ -55,9 +55,15 @@ export const ButtonContainer = styled.button<Props>`
             `
         }
         if (p.buttonColor === 'WARNING') {
+            if (p.buttonType === 'TEXT') {
+                return css`
+                    background-color: var(--color-warning);
+                    color: var(--color-warning);
+                `
+            }
             return css`
                 background-color: var(--color-warning);
-                color: var(--color-warning);
+                color: var(--color-light);
             `
         }
         return css`

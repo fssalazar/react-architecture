@@ -5,23 +5,23 @@
 import React, { useEffect, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { Pagination } from '@material-ui/lab'
-import { Button } from '../../components/Button'
+import { v4 } from 'uuid'
 import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
-import { usePointOfSale } from '../../hooks/usePointOfSale'
-import { HandlePointOfSale } from '../../modals/HandlePointOfSale'
 import { RoutesName } from '../../routes'
 import { PaginationContent } from '../../utils/SharedStyles'
 import { PaginationContainer, PointsOfSaleContainer } from './styles'
 import { Table } from '../../utils/Table'
-import { SinglePointOfSale } from '../../components/SinglePointOfSale'
+import { SingleTelemetry } from '../../components/SingleTelemetry'
+import { useTelemetry } from '../../hooks/useTelemetry'
+import { TelemetryInfo } from '../../modals/TelemetryInfo'
 
-export function PointsOfSalePage() {
+export function TelemetriesPage() {
     // hooks
-    const { getPointsOfSale, count, pointsOfSale } = usePointOfSale()
+    const { telemetry, chooseTelemetry, getTelemetries, telemetries, count } =
+        useTelemetry()
     // state
-    const [openCreatePointOfSale, setOpenCreatePointOfSale] = useState(false)
     const [busy, setBusy] = useState(false)
     const [limit, setLimit] = useState<{ label: string; value: number }>({
         label: '10',
@@ -37,7 +37,7 @@ export function PointsOfSalePage() {
     useEffect(() => {
         setBusy(true)
         ;(async () => {
-            getPointsOfSale(
+            await getTelemetries(
                 limit.value,
                 pageSelected * limit.value - limit.value,
                 searchString === '' ? undefined : searchString
@@ -48,15 +48,15 @@ export function PointsOfSalePage() {
 
     return (
         <MainContainer
-            path={[{ label: 'Pontos de venda', path: RoutesName.pointsOfSale }]}
-            title="Pontos de veda"
-            active="points-of-sale"
+            path={[{ label: 'Telemetrias', path: RoutesName.telemetries }]}
+            title="Telemetrias"
+            active="telemetries"
             busy={busy}
         >
             <PointsOfSaleContainer>
                 <div className="filters">
                     <SimpleInput
-                        name="point-filter"
+                        name="telemeries-filter"
                         label="Busca rápida"
                         icon={FiSearch}
                         onChange={(e) => {
@@ -64,25 +64,7 @@ export function PointsOfSalePage() {
                             setPageSelected(1)
                         }}
                     />
-                    <div className="location-search">
-                        {/* <div className="location-search-select">
-                            <SmallSelectInput
-                                name="location"
-                                options={[
-                                    { label: 'Todos', value: '1' },
-                                    { label: 'Itajaí-SC', value: '1' },
-                                ]}
-                                placeholder="Localização"
-                            />
-                        </div> */}
-                        <Button
-                            text="Criar ponto de venda"
-                            type="button"
-                            buttonType="FILLED"
-                            color="SECONDARY"
-                            onClick={() => setOpenCreatePointOfSale(true)}
-                        />
-                    </div>
+                    <div className="location-search" />
                 </div>
                 <div className="points-of-sale-content">
                     <PaginationContent>
@@ -97,7 +79,7 @@ export function PointsOfSalePage() {
                         </div>
                         <PaginationContainer>
                             <Pagination
-                                count={numberOfPages(count || 0)}
+                                count={numberOfPages(1 || 0)}
                                 color="primary"
                                 variant="outlined"
                                 page={pageSelected}
@@ -138,16 +120,18 @@ export function PointsOfSalePage() {
                 <Table>
                     <div
                         className="table-header"
-                        style={{ gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr' }}
+                        style={{
+                            gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
+                        }}
                     >
-                        <h1>Nome</h1>
-                        <h1>Localização</h1>
-                        <h1>Telefone</h1>
-                        <button type="button">Qtd. Máquinas</button>
-                        <button type="button">Última visita</button>
+                        <h1>ID</h1>
+                        <h1>Máquina</h1>
+                        <h1>Conexão</h1>
+                        <h1>Última comunicação</h1>
+                        <button type="button">Status</button>
                     </div>
-                    {pointsOfSale.map((pointOfSale) => {
-                        return <SinglePointOfSale pointOfSale={pointOfSale} />
+                    {telemetries.map((t) => {
+                        return <SingleTelemetry telemetry={t} key={v4()} />
                     })}
                 </Table>
                 <PaginationContent>
@@ -200,11 +184,13 @@ export function PointsOfSalePage() {
                     </div>
                 </PaginationContent>
             </PointsOfSaleContainer>
-
-            <HandlePointOfSale
-                isOpen={openCreatePointOfSale}
-                onRequestClose={() => setOpenCreatePointOfSale(false)}
-            />
+            {telemetry && (
+                <TelemetryInfo
+                    isOpen={!!telemetry}
+                    telemetry={telemetry}
+                    onRequestClose={() => chooseTelemetry(undefined)}
+                />
+            )}
         </MainContainer>
     )
 }

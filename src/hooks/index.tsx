@@ -3,6 +3,7 @@ import { AuthProvider } from './use-auth'
 import { UserProvider } from './use-user'
 import { CategoryProvider } from './useCategory'
 import { PointOfSaleProvider } from './usePointOfSale'
+import { TelemetryProvider } from './useTelemetry'
 
 interface AppProvideProps {
     children: ReactNode
@@ -13,7 +14,9 @@ export function AppProvider({ children }: AppProvideProps) {
         <AuthProvider>
             <UserProvider>
                 <CategoryProvider>
-                    <PointOfSaleProvider>{children}</PointOfSaleProvider>
+                    <PointOfSaleProvider>
+                        <TelemetryProvider>{children}</TelemetryProvider>
+                    </PointOfSaleProvider>
                 </CategoryProvider>
             </UserProvider>
         </AuthProvider>

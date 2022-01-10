@@ -1,6 +1,7 @@
 import React from 'react'
 import { GeneralUser } from '../../entities/generalUser'
 import { useUser } from '../../hooks/use-user'
+import { Avatar } from '../Avatar'
 import { SingleUserContainer } from './styles'
 
 interface Props {
@@ -19,11 +20,11 @@ export function SingleUser({ user }: Props) {
                 }}
             >
                 <h1 className="f14-700-dark">{`${user.firstName} ${user.lastName}`}</h1>
-                <h1 className="f12-600-gray ">Cargo</h1>
+                <h1 className="f12-600-gray ">{user.permissions.label}</h1>
                 <h1 className="f12-600-gray ">Telefone</h1>
                 <h1 className="f12-600-gray ">{user.email}</h1>
-                <h1 className="f12-600-gray ">Ultimo acesso</h1>
-                <h1 className="f12-600-gray ">#</h1>
+                <h1 className="f12-600-gray ">Ultimo </h1>
+                <Avatar label={`${user.firstName[0]}${user.lastName[0]}`} />
             </SingleUserContainer>
         </>
     )

@@ -20,7 +20,7 @@ import { SingleUser } from '../../components/SingleUser'
 
 export function UsersPage() {
     // hooks
-    const { getUsers, users, userToEdit, chooseUserToEdit } = useUser()
+    const { getUsers, users, userToEdit, chooseUserToEdit, count } = useUser()
     // state
     const [openCreateUser, setOpenCreateUser] = useState(false)
     const [busy, setBusy] = useState(false)
@@ -28,6 +28,8 @@ export function UsersPage() {
         label: '10',
         value: 10,
     })
+    const [searchString, setSearchString] = useState<string>()
+
     const [pageSelected, setPageSelected] = useState<number>(1)
 
     function numberOfPages(countNum: number) {
@@ -37,10 +39,14 @@ export function UsersPage() {
     useEffect(() => {
         setBusy(true)
         ;(async () => {
-            getUsers()
+            getUsers(
+                limit.value,
+                pageSelected * limit.value - limit.value,
+                searchString === '' ? undefined : searchString
+            )
             setBusy(false)
         })()
-    }, [])
+    }, [limit, pageSelected, searchString])
 
     return (
         <MainContainer
@@ -55,6 +61,10 @@ export function UsersPage() {
                         name="point-filter"
                         label="Busca rápida"
                         icon={FiSearch}
+                        onChange={(e) => {
+                            setSearchString(e.target.value)
+                            setPageSelected(1)
+                        }}
                     />
                     <div className="location-search">
                         <Button
@@ -72,14 +82,14 @@ export function UsersPage() {
                             <p>{`Mostrando ${
                                 pageSelected * limit.value - limit.value + 1
                             } - ${
-                                pageSelected * limit.value < users.length
+                                pageSelected * limit.value < count!
                                     ? pageSelected * limit.value
-                                    : users.length
-                            } de ${users.length} resultados`}</p>
+                                    : count
+                            } de ${count} resultados`}</p>
                         </div>
                         <PaginationContainer>
                             <Pagination
-                                count={numberOfPages(users.length || 0)}
+                                count={numberOfPages(count || 0)}
                                 color="primary"
                                 variant="outlined"
                                 page={pageSelected}
@@ -140,14 +150,14 @@ export function UsersPage() {
                         <p>{`Mostrando ${
                             pageSelected * limit.value - limit.value + 1
                         } - ${
-                            pageSelected * limit.value < users.length
+                            pageSelected * limit.value < count!
                                 ? pageSelected * limit.value
-                                : users.length
-                        } de ${users.length} resultados`}</p>
+                                : count
+                        } de ${count} resultados`}</p>
                     </div>
                     <PaginationContainer>
                         <Pagination
-                            count={numberOfPages(users.length || 0)}
+                            count={numberOfPages(count || 0)}
                             color="primary"
                             variant="outlined"
                             page={pageSelected}

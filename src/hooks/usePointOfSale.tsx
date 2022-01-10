@@ -8,7 +8,8 @@ import { PointOfSale } from '../entities/pointOfSale'
 interface PointOfSaleContext {
     getPointsOfSale(
         limit?: number,
-        offset?: number
+        offset?: number,
+        search?: string
     ): Promise<{ count: number; pointsOfSale: PointOfSale[] } | undefined>
     createPointOfSale(data: handlePointOfSaleDto): Promise<void | undefined>
     getPointOfSale(id: string): Promise<PointOfSale | undefined>
@@ -35,7 +36,11 @@ export function PointOfSaleProvider({ children }: Props) {
     const [pointOfSale, setPointOfSale] = useState<PointOfSale>()
     const [count, setCount] = useState<number>()
 
-    async function getPointsOfSale(limit?: number, offset?: number) {
+    async function getPointsOfSale(
+        limit?: number,
+        offset?: number,
+        search?: string
+    ) {
         try {
             if (!limit) {
                 limit = 10
@@ -54,6 +59,7 @@ export function PointOfSaleProvider({ children }: Props) {
                 params: {
                     limit,
                     offset,
+                    search_string: search,
                 },
             })
             setCount(response.data.count)

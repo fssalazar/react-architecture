@@ -8,6 +8,7 @@ import { LoginPage } from '../pages/Login'
 import { PasswordChangedPage } from '../pages/PasswordChanged'
 import { PointOfSaleInfoPage } from '../pages/PointOfSaleInfo'
 import { PointsOfSalePage } from '../pages/PointsOfSale'
+import { TelemetriesPage } from '../pages/Telemetries'
 import { TemplatesPage } from '../pages/Templates'
 import { UsersPage } from '../pages/Users'
 import { Route } from './route'
@@ -23,6 +24,7 @@ export const RoutesName: {
     singlePointsOfSale: string
     templates: string
     users: string
+    telemetries: string
 } = {
     login: '/',
     forgotPassword: '/forgot-password',
@@ -34,6 +36,7 @@ export const RoutesName: {
     singlePointsOfSale: '/point-of-sale-info',
     templates: '/templates',
     users: '/users',
+    telemetries: '/telemetries',
 }
 
 export function Routes() {
@@ -98,6 +101,12 @@ export function Routes() {
                 isPrivate
                 exact
                 component={UsersPage}
+            />
+            <Route
+                path={RoutesName.telemetries}
+                isPrivate
+                exact
+                component={TelemetriesPage}
             />
         </Switch>
     )

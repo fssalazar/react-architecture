@@ -175,6 +175,11 @@ export default createGlobalStyle`
     font-size: 1.4rem;
     font-weight: 500;
   }
+  .f14-400-dark {
+    color: var(--color-dark);
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
   .f14-500-gray {
     color: var(--color-gray);
     font-size: 1.4rem;
@@ -284,6 +289,33 @@ export default createGlobalStyle`
     background-color: var(--color-light);
     outline: none;
     width: 73rem;
+    min-height: 28.2rem;
+    max-height: 87rem;
+    box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.08), 0px 4px 56px rgba(0, 0, 0, 0.08);
+    
+    .close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        border: none;
+        background-color: inherit;
+        font-weight: 700;
+        font-size: 1.6rem;
+        padding: 1rem;
+        outline: none;
+        transition: all 0.3s;
+        &:hover {
+            transform: rotate(180deg) scale(1.2);
+        }
+    }
+}
+.react-modal-telemetry-content {
+    position: relative;
+    padding: 6.6rem 3.8rem 3.8rem 3.8rem;
+    border-radius: 2.4rem;
+    background-color: var(--color-light);
+    outline: none;
+    width: 40rem;
     min-height: 28.2rem;
     max-height: 87rem;
     box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.08), 0px 4px 56px rgba(0, 0, 0, 0.08);

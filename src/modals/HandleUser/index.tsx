@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
@@ -16,6 +17,7 @@ import { HandleUserDto } from '../../dtos/handleUser'
 import { useUser } from '../../hooks/use-user'
 import { GeneralUser } from '../../entities/generalUser'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
+import { CreateTemplate } from '../CreateTemplate'
 
 interface Props {
     isOpen: boolean
@@ -25,13 +27,26 @@ interface Props {
 
 export function HandleUser({ isOpen, onRequestClose, user }: Props) {
     // hooks
-    const { createUser, getTemplates, templates } = useUser()
+    const { createUser, getTemplates, templates, editUser, deleteUser } =
+        useUser()
     // refs
     const formRef = useRef<FormHandles>(null)
     // state
-    const [selectedTemplateId, setSelectedTemplateId] = useState<string>()
+    const [selectedTemplate, setSelectedTemplate] = useState<{
+        label?: string
+        value?: string
+    }>(() => {
+        if (user) {
+            return {
+                label: user.permissions.label,
+                value: user.permissions.templateId,
+            }
+        }
+        return { label: 'Selecinar cargo', value: 'none' }
+    })
     const [busyBtn, setBusyBtn] = useState(false)
     const [busy, setBusy] = useState(false)
+    const [openCreateTemplate, setOpenCreateTemplate] = useState(false)
 
     setTimeout(() => {
         if (user) {
@@ -57,27 +72,42 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
             formRef.current?.setErrors({})
             const schema = Yup.object().shape({
                 firstName: Yup.string().required('Insira o nome do usuário'),
+                email: Yup.string().required('Insira o e-mail do usuário'),
             })
             await schema.validate(data, {
                 abortEarly: false,
             })
             if (user) {
-                // const response = await editPointOfSale(data, pointOfSale.id)
-                // if (response) {
-                //     toast.success(
-                //         `Ponto de venda ${data.label} editado com sucesso`
-                //     )
-                // }
-                setBusyBtn(false)
+                if (selectedTemplate.value) {
+                    const response = await editUser(
+                        selectedTemplate.value,
+                        user.id
+                    )
+                    if (response) {
+                        toast.success(
+                            `Usuário ${data.firstName} editado com sucesso`
+                        )
+                    }
+                    setBusyBtn(false)
 
-                return
+                    return
+                }
             }
-            if (selectedTemplateId) {
+            if (
+                selectedTemplate?.value === 'none' ||
+                selectedTemplate?.value === undefined
+            ) {
+                toast.info(
+                    `Para cadastrar um usuário é necessário selecionar um cargo.`
+                )
+                setBusyBtn(false)
+            }
+            if (selectedTemplate?.value) {
                 const createUserData: HandleUserDto = {
                     email: data.email,
                     firstName: data.firstName,
                     lastName: data.lastName,
-                    userTemplateId: selectedTemplateId,
+                    userTemplateId: selectedTemplate?.value,
                 }
                 const response = await createUser(createUserData)
                 if (response) {
@@ -87,6 +117,7 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                 }
                 setBusyBtn(false)
             }
+            setBusyBtn(false)
         } catch (error) {
             toast.warning(
                 'Verifique se todos os campos foram preenchidos corretamente'
@@ -123,31 +154,53 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                         </h1>
                     </div>
                     <Form ref={formRef} onSubmit={handleUser} noValidate>
-                        <div className="input">
-                            <Input name="firstName" label="Nome" />
+                        <div className="form-avatar">
+                            <div className="form">
+                                <div className="input">
+                                    <Input name="firstName" label="Nome" />
+                                </div>
+                                <div className="input">
+                                    <Input name="lastName" label="Sobrenome" />
+                                </div>
+                                <div className="input">
+                                    <Input name="email" label="E-mail" />
+                                </div>
+                                <div className="input-select">
+                                    <SmallSelectInput
+                                        name="email"
+                                        placeholder="Cargo"
+                                        onChange={(e) => {
+                                            if (e) {
+                                                setSelectedTemplate({
+                                                    value: e.value,
+                                                    label: e.label,
+                                                })
+                                            }
+                                        }}
+                                        value={selectedTemplate}
+                                        options={templates.map((template) => {
+                                            return {
+                                                label: template.label,
+                                                value: template.id,
+                                            }
+                                        })}
+                                    />
+                                </div>
+                            </div>
+                            {user && (
+                                <div className="avatar">
+                                    {`${user.firstName[0]}${user.lastName[0]}`}
+                                </div>
+                            )}
                         </div>
-                        <div className="input">
-                            <Input name="lastName" label="Sobrenome" />
-                        </div>
-                        <div className="input">
-                            <Input name="email" label="E-mail" />
-                        </div>
-                        <div className="input-select">
-                            <SmallSelectInput
-                                name="email"
-                                placeholder="Cargo"
-                                onChange={(e) => {
-                                    if (e) {
-                                        setSelectedTemplateId(e.value)
-                                    }
-                                }}
-                                options={templates.map((template) => {
-                                    return {
-                                        label: template.label,
-                                        value: template.id,
-                                    }
-                                })}
-                            />
+                        <div className="create-new-template">
+                            <p>ou crie um novo cargo</p>
+                            <button
+                                type="button"
+                                onClick={() => setOpenCreateTemplate(true)}
+                            >
+                                aqui
+                            </button>
                         </div>
                         <div className="btns">
                             <Button
@@ -157,17 +210,50 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                                 color="WARNING"
                                 onClick={() => onRequestClose()}
                             />
-                            <Button
-                                text="Salvar"
-                                type="submit"
-                                buttonType="FILLED"
-                                color="SECONDARY"
-                                busy={busyBtn}
-                            />
+                            {user ? (
+                                <div className="save-delete">
+                                    <Button
+                                        text="Deletar"
+                                        type="button"
+                                        buttonType="FILLED"
+                                        color="WARNING"
+                                        busy={busyBtn}
+                                        onClick={async () => {
+                                            const response = await deleteUser(
+                                                user.id
+                                            )
+                                            if (response) {
+                                                toast.success(
+                                                    `Usuário ${user.firstName} deletado com sucesso.`
+                                                )
+                                            }
+                                        }}
+                                    />
+                                    <Button
+                                        text="Salvar"
+                                        type="submit"
+                                        buttonType="FILLED"
+                                        color="SECONDARY"
+                                        busy={busyBtn}
+                                    />
+                                </div>
+                            ) : (
+                                <Button
+                                    text="Criar"
+                                    type="submit"
+                                    buttonType="FILLED"
+                                    color="SECONDARY"
+                                    busy={busyBtn}
+                                />
+                            )}
                         </div>
                     </Form>
                 </CreateUserContent>
             )}
+            <CreateTemplate
+                isOpen={openCreateTemplate}
+                onRequestClose={() => setOpenCreateTemplate(false)}
+            />
         </ModalContainer>
     )
 }
