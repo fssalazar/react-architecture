@@ -49,6 +49,19 @@ export const CreateUserContent = styled.div`
             }
         }
     }
+    .last-access {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 2rem;
+        svg {
+            margin-right: 1rem;
+            color: var(--color-warning);
+        }
+        p {
+            color: var(--color-warning);
+        }
+    }
     .btns {
         display: flex;
         align-items: center;

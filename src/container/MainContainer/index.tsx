@@ -4,6 +4,7 @@ import { BsHouseDoor } from 'react-icons/bs'
 import { v4 } from 'uuid'
 import { SideBar } from '../../components/SideBar'
 import { MainContainerStyled } from './styles'
+import { Button } from '../../components/Button'
 
 interface Props {
     children: ReactNode
@@ -11,9 +12,19 @@ interface Props {
     title: string
     active: string
     busy: boolean
+    btnLabel?: string
+    callback?(): void
 }
 
-export function MainContainer({ children, path, title, active, busy }: Props) {
+export function MainContainer({
+    children,
+    path,
+    title,
+    active,
+    busy,
+    btnLabel,
+    callback,
+}: Props) {
     return (
         <MainContainerStyled>
             <SideBar active={active} />
@@ -33,7 +44,17 @@ export function MainContainer({ children, path, title, active, busy }: Props) {
                         )
                     })}
                 </div>
-                <h1 className="title">{title}</h1>
+                <div className="title-button">
+                    <h1 className="title">{title}</h1>
+                    <Button
+                        className="header-btn"
+                        type="button"
+                        buttonType="FILLED"
+                        text={btnLabel || ''}
+                        color="SECONDARY"
+                        onClick={() => callback && callback()}
+                    />
+                </div>
                 {busy ? <div /> : <>{children}</>}
             </div>
         </MainContainerStyled>

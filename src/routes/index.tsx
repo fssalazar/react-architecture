@@ -5,6 +5,8 @@ import { ChangePasswordPage } from '../pages/ChangePassword'
 import { EmailSentPage } from '../pages/EmailSent'
 import { ForgotPasswordPage } from '../pages/ForgotPassword'
 import { LoginPage } from '../pages/Login'
+import { MachineInfoPage } from '../pages/MachineInfo'
+import { MachinesPage } from '../pages/Machines'
 import { PasswordChangedPage } from '../pages/PasswordChanged'
 import { PointOfSaleInfoPage } from '../pages/PointOfSaleInfo'
 import { PointsOfSalePage } from '../pages/PointsOfSale'
@@ -22,9 +24,11 @@ export const RoutesName: {
     categories: string
     pointsOfSale: string
     singlePointsOfSale: string
+    singleMachine: string
     templates: string
     users: string
     telemetries: string
+    machines: string
 } = {
     login: '/',
     forgotPassword: '/forgot-password',
@@ -37,6 +41,8 @@ export const RoutesName: {
     templates: '/templates',
     users: '/users',
     telemetries: '/telemetries',
+    machines: '/machines',
+    singleMachine: '/machine-info',
 }
 
 export function Routes() {
@@ -107,6 +113,18 @@ export function Routes() {
                 isPrivate
                 exact
                 component={TelemetriesPage}
+            />
+            <Route
+                path={RoutesName.machines}
+                isPrivate
+                exact
+                component={MachinesPage}
+            />
+            <Route
+                path={RoutesName.singleMachine}
+                isPrivate
+                exact
+                component={MachineInfoPage}
             />
         </Switch>
     )

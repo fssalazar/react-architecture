@@ -1,5 +1,5 @@
 export interface Telemetry {
-    id: number
+    id: string
     iccCode: string
     imeiCode: string
     status: string

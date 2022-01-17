@@ -26,5 +26,6 @@ export interface GeneralUser {
         templateId: string
         label: string
     }
+    lastAccess?: Date
     type: string
 }

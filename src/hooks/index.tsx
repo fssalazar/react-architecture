@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import { AuthProvider } from './use-auth'
+import { MachineProvider } from './use-machine'
 import { UserProvider } from './use-user'
 import { CategoryProvider } from './useCategory'
 import { PointOfSaleProvider } from './usePointOfSale'
@@ -15,7 +16,9 @@ export function AppProvider({ children }: AppProvideProps) {
             <UserProvider>
                 <CategoryProvider>
                     <PointOfSaleProvider>
-                        <TelemetryProvider>{children}</TelemetryProvider>
+                        <TelemetryProvider>
+                            <MachineProvider>{children}</MachineProvider>
+                        </TelemetryProvider>
                     </PointOfSaleProvider>
                 </CategoryProvider>
             </UserProvider>

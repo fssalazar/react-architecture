@@ -66,6 +66,7 @@ export function CategoryProvider({ children }: Props) {
                     delete c.id
                 })
             })
+            console.log(data)
             const response = await api.patch(
                 `categories/${id}`,
                 { boxes: data },

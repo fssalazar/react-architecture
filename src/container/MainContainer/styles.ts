@@ -24,11 +24,20 @@ export const MainContainerStyled = styled.div`
                 margin-right: 1rem;
             }
         }
-        .title {
-            font-size: 3.4rem;
-            font-weight: 700;
-            color: #1d1929;
-            padding: 1.6rem 0;
+        .title-button {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .title {
+                font-size: 3.4rem;
+                font-weight: 700;
+                color: #1d1929;
+                padding: 1.6rem 0;
+            }
+            .header-btn {
+                width: 20rem;
+                margin-right: 5rem;
+            }
         }
     }
 `

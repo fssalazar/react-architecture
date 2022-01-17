@@ -9,6 +9,7 @@ import { Form } from '@unform/web'
 import React, { useEffect, useRef, useState } from 'react'
 import ModalContainer from 'react-modal'
 import { toast } from 'react-toastify'
+import { FiAlertCircle } from 'react-icons/fi'
 import { Button } from '../../components/Button'
 import { Input } from '../../unformInputs/Input'
 import { getValidationErrors } from '../../utils/getValidationErrors'
@@ -202,6 +203,14 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                                 aqui
                             </button>
                         </div>
+                        {user ? (
+                            <div className="last-access">
+                                <FiAlertCircle />
+                                <p>Usuário não confirmou o e-mail ainda.</p>
+                            </div>
+                        ) : (
+                            <div />
+                        )}
                         <div className="btns">
                             <Button
                                 text="Cancelar"
