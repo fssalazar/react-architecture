@@ -19,7 +19,6 @@ export function TemplatesPage() {
     const [openCreateTemplate, setOpenCreateTemplate] = useState(false)
     const [canEdit, setCanEdit] = useState(false)
     const [busy, setBusy] = useState(false)
-    const [editLoader, setEditLoader] = useState(false)
 
     function closeCreateTemplate() {
         setOpenCreateTemplate(false)
@@ -39,6 +38,10 @@ export function TemplatesPage() {
             title="Cargos"
             active="templates"
             busy={busy}
+            btnLabel="Criar"
+            callback={() => {
+                setOpenCreateTemplate(true)
+            }}
         >
             <TemplatesContainer>
                 <div className="header-content">
@@ -106,15 +109,6 @@ export function TemplatesPage() {
                                     />
                                 </>
                             )}
-                            <Button
-                                type="button"
-                                buttonType="FILLED"
-                                color="SECONDARY"
-                                text="Criar"
-                                onClick={() => {
-                                    setOpenCreateTemplate(true)
-                                }}
-                            />
                         </div>
                     ) : (
                         <div className="header-btns">
@@ -476,12 +470,12 @@ export function TemplatesPage() {
                                         <div className="header">
                                             <div className="title">
                                                 <h1 className="f16-700-dark">
-                                                    Categorias
+                                                    Modelos
                                                 </h1>
                                                 <h2 className="f12-600-gray">
                                                     Permissões referentes ao
-                                                    acesso e ações nas
-                                                    categorias de máquina.
+                                                    acesso e ações nos modelos
+                                                    de máquina.
                                                 </h2>
                                             </div>
                                             <button type="button">
@@ -516,11 +510,12 @@ export function TemplatesPage() {
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
-                                                        Acessar categorias
+                                                        Acessar modelos de
+                                                        máquinas
                                                     </h2>
                                                     <p className="f12-500-gray">
                                                         O usuário poderá acessar
-                                                        a página de categorias.
+                                                        a página de modelos.
                                                     </p>
                                                 </div>
                                             </label>
@@ -551,13 +546,14 @@ export function TemplatesPage() {
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
-                                                        Gerenciar categorias
+                                                        Gerenciar modelos de
+                                                        máquinas
                                                     </h2>
                                                     <p className="f12-500-gray">
                                                         O usuário poderá criar,
                                                         excluir ou alterar
-                                                        qualquer categoria no
-                                                        sistema.
+                                                        qualquer modelos de
+                                                        máquinas no sistema.
                                                     </p>
                                                 </div>
                                             </label>

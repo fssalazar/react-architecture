@@ -27,6 +27,9 @@ import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { useMachine } from '../../hooks/use-machine'
 import { Machine } from '../../entities/machine'
+import { HandleUser } from '../HandleUser'
+import { HandlePointOfSale } from '../HandlePointOfSale'
+import { CreateCategory } from '../CreateCategory'
 
 interface Props {
     isOpen: boolean
@@ -41,7 +44,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
     const { users, getUsers } = useUser()
     const { pointsOfSale, getPointsOfSale } = usePointOfSale()
     const { counterTypes, getCounterTypes } = useCategory()
-    const { createMachine } = useMachine()
+    const { createMachine, editMachine } = useMachine()
     // refs
     const formRef = useRef<FormHandles>(null)
     // state
@@ -73,6 +76,9 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
         value: 'none',
     })
     const [selectedCategory, setSelectedCategory] = useState<Category>()
+    const [openCreateOperator, setOpenCreateOperator] = useState(false)
+    const [openPointOfSale, setOpenPointOfSale] = useState(false)
+    const [openCreateCategory, setOpenCreateCategory] = useState(false)
 
     const pin = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
@@ -90,16 +96,36 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
     }
 
     useEffect(() => {
-        if (machine) {
-            formRef.current?.setData({
-                label: machine.label,
-                gamePrice: machine.gamePrice,
-                minStock: machine.minStock,
-            })
-        }
-    }, [])
+        setTimeout(() => {
+            if (machine) {
+                console.log('a')
+                formRef.current?.setData({
+                    label: machine.label,
+                    gamePrice: machine.gamePrice,
+                    minStock: machine.minStock,
+                })
+                setSelectedCategory(machine.category)
+                if (machine.operator) {
+                    setOperator({
+                        value: machine.operator.id,
+                        label: `${machine.operator.firstName} ${machine.operator.lastName}`,
+                    })
+                }
+                if (machine.telemetry) {
+                    setTelemetry({
+                        value: machine.telemetry.id,
+                        label: `STG - ${machine.telemetry.id}`,
+                    })
+                }
+                if (machine.pointOfSale) {
+                    setPointOfSale({
+                        value: machine.pointOfSale.id,
+                        label: machine.pointOfSale.label,
+                    })
+                }
+            }
+        }, 500)
 
-    useEffect(() => {
         setBusy(true)
         ;(async () => {
             await getUsers()
@@ -123,30 +149,6 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
             await schema.validate(data, {
                 abortEarly: false,
             })
-            if (machine) {
-                if (machine.operator) {
-                    setOperator({
-                        value: machine.operator.id,
-                        label: `${machine.operator.firstName} ${machine.operator.lastName}`,
-                    })
-                }
-                if (machine.telemetry) {
-                    setTelemetry({
-                        value: machine.telemetry.id,
-                        label: `STG - ${machine.telemetry.id}`,
-                    })
-                }
-                if (machine.pointOfSale) {
-                    setPointOfSale({
-                        value: machine.pointOfSale.id,
-                        label: machine.pointOfSale.label,
-                    })
-                }
-                setSelectedCategory(machine.category)
-                setBusyBtn(false)
-
-                return
-            }
             if (selectedCategory) {
                 selectedCategory.boxes.forEach((box) => {
                     box.counters.forEach((counter) => {
@@ -155,26 +157,63 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                         delete counter.counterType
                     })
                 })
-                const createMachineData: HandleMachineDto = {
-                    minStock: data.minStock,
-                    gamePrice: data.gamePrice,
-                    label: data.label,
-                    telemetryId: telemetry.value,
-                    operatorId:
-                        operator.value === 'none' ? undefined : operator.value,
-                    pointOfSaleId:
-                        pointOfSale.value === 'none'
-                            ? undefined
-                            : pointOfSale.value,
-                    productId: undefined,
-                    categoryId: selectedCategory.id,
-                    boxes: selectedCategory.boxes,
+                if (machine) {
+                    const editMachineData: HandleMachineDto = {
+                        minStock: data.minStock,
+                        gamePrice: data.gamePrice,
+                        label: data.label,
+                        telemetryId: telemetry.value,
+                        operatorId:
+                            operator.value === 'none'
+                                ? undefined
+                                : operator.value,
+                        pointOfSaleId:
+                            pointOfSale.value === 'none'
+                                ? undefined
+                                : pointOfSale.value,
+                        productId: undefined,
+                        boxes: selectedCategory.boxes,
+                    }
+                    const response = await editMachine(
+                        editMachineData,
+                        machine.id
+                    )
+                    if (response) {
+                        toast.success(
+                            `Máquina ${data.label} editada com sucesso`
+                        )
+                    }
+                } else {
+                    const createMachineData: HandleMachineDto = {
+                        minStock: data.minStock,
+                        gamePrice: data.gamePrice,
+                        label: data.label,
+                        telemetryId: telemetry.value,
+                        operatorId:
+                            operator.value === 'none'
+                                ? undefined
+                                : operator.value,
+                        pointOfSaleId:
+                            pointOfSale.value === 'none'
+                                ? undefined
+                                : pointOfSale.value,
+                        productId: undefined,
+                        categoryId: selectedCategory.id,
+                        boxes: selectedCategory.boxes,
+                    }
+                    const response = await createMachine(createMachineData)
+                    if (response) {
+                        toast.success(
+                            `Máquina ${data.label} criada com sucesso`
+                        )
+                    }
                 }
-                console.log(createMachineData)
-                const response = await createMachine(createMachineData)
-                if (response) {
-                    toast.success(`Máquina ${data.label} criada com sucesso`)
-                }
+            } else {
+                toast.info(
+                    `Para criar uma máquina é necessário selecionar um modelo`
+                )
+                setBusyBtn(false)
+                return
             }
 
             setBusyBtn(false)
@@ -248,72 +287,97 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                             />
                         </div>
                         <div className="grid grid-1-1">
-                            <SelectInput
-                                name="operatorId"
-                                value={
-                                    operator.value === 'none'
-                                        ? undefined
-                                        : operator
-                                }
-                                placeholder="Operador"
-                                options={users.map((operatorTmp) => {
-                                    return {
-                                        value: operatorTmp.id,
-                                        label: `${operatorTmp.firstName} ${operatorTmp.lastName}`,
+                            <div className="input-btn">
+                                <SelectInput
+                                    name="operatorId"
+                                    value={
+                                        operator.value === 'none'
+                                            ? undefined
+                                            : operator
                                     }
-                                })}
-                                onChange={(e) => {
-                                    if (e) {
-                                        setOperator({
-                                            value: e.value,
-                                            label: e.label,
-                                        })
+                                    placeholder="Operador"
+                                    options={users.map((operatorTmp) => {
+                                        return {
+                                            value: operatorTmp.id,
+                                            label: `${operatorTmp.firstName} ${operatorTmp.lastName}`,
+                                        }
+                                    })}
+                                    onChange={(e) => {
+                                        if (e) {
+                                            setOperator({
+                                                value: e.value,
+                                                label: e.label,
+                                            })
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className="add-new-btn"
+                                    onClick={() => setOpenCreateOperator(true)}
+                                >
+                                    Criar novo operador
+                                </button>
+                            </div>
+                            <div className="input-btn">
+                                <SelectInput
+                                    name="pointOfSaleId"
+                                    value={
+                                        pointOfSale.value === 'none'
+                                            ? undefined
+                                            : pointOfSale
                                     }
-                                }}
-                            />
-                            <SelectInput
-                                name="pointOfSaleId"
-                                value={
-                                    pointOfSale.value === 'none'
-                                        ? undefined
-                                        : pointOfSale
-                                }
-                                placeholder="Ponto de venda"
-                                options={pointsOfSale.map((pointOfSaleTmp) => {
-                                    return {
-                                        value: pointOfSaleTmp.id,
-                                        label: pointOfSaleTmp.label,
-                                    }
-                                })}
-                                onChange={(e) => {
-                                    if (e) {
-                                        setPointOfSale({
-                                            value: e.value,
-                                            label: e.label,
-                                        })
-                                    }
-                                }}
-                            />
+                                    placeholder="Ponto de venda"
+                                    options={pointsOfSale.map(
+                                        (pointOfSaleTmp) => {
+                                            return {
+                                                value: pointOfSaleTmp.id,
+                                                label: pointOfSaleTmp.label,
+                                            }
+                                        }
+                                    )}
+                                    onChange={(e) => {
+                                        if (e) {
+                                            setPointOfSale({
+                                                value: e.value,
+                                                label: e.label,
+                                            })
+                                        }
+                                    }}
+                                />
+                                <button
+                                    type="button"
+                                    className="add-new-btn"
+                                    onClick={() => setOpenPointOfSale(true)}
+                                >
+                                    Criar novo ponto de venda
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-2-1-1">
-                            <SelectInput
-                                name="productId"
-                                value={
-                                    product.value === 'none'
-                                        ? undefined
-                                        : product
-                                }
-                                placeholder="Produto"
-                                options={[product]}
-                                onChange={(e) => {
-                                    if (e) {
-                                        setProduct({
-                                            value: e.value,
-                                            label: e.label,
-                                        })
+                            <div className="input-btn">
+                                <SelectInput
+                                    name="productId"
+                                    value={
+                                        product.value === 'none'
+                                            ? undefined
+                                            : product
                                     }
-                                }}
-                            />
+                                    placeholder="Produto"
+                                    options={[product]}
+                                    onChange={(e) => {
+                                        if (e) {
+                                            setProduct({
+                                                value: e.value,
+                                                label: e.label,
+                                            })
+                                        }
+                                    }}
+                                />
+                                <button type="button" className="add-new-btn">
+                                    Criar novo produto
+                                </button>
+                            </div>
                             <Input
                                 name="minStock"
                                 label="Estoque mínimo"
@@ -329,45 +393,60 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                             {machine ? (
                                 <h1>{machine.category.label}</h1>
                             ) : (
-                                <SelectInput
-                                    name="categoryId"
-                                    value={
-                                        selectedCategory
-                                            ? {
-                                                  value: selectedCategory.id,
-                                                  label: selectedCategory.label,
-                                              }
-                                            : undefined
-                                    }
-                                    placeholder="Categoria"
-                                    options={categories.map((categoryTmp) => {
-                                        return {
-                                            value: categoryTmp.id,
-                                            label: categoryTmp.label,
+                                <div className="input-btn">
+                                    <SelectInput
+                                        name="categoryId"
+                                        value={
+                                            selectedCategory
+                                                ? {
+                                                      value: selectedCategory.id,
+                                                      label: selectedCategory.label,
+                                                  }
+                                                : undefined
                                         }
-                                    })}
-                                    onChange={(e) => {
-                                        if (e) {
-                                            const temp = categories.find(
-                                                (c) => c.id === e.value
-                                            )
-                                            const boxes: Box[] = []
-                                            temp?.boxes.forEach((b) => {
-                                                boxes.push({
-                                                    id: b.id,
-                                                    label: b.label,
-                                                    counters: [...b.counters],
-                                                })
-                                            })
-                                            if (temp) {
-                                                setSelectedCategory({
-                                                    ...temp,
-                                                    boxes,
-                                                })
+                                        placeholder="Modelo"
+                                        options={categories.map(
+                                            (categoryTmp) => {
+                                                return {
+                                                    value: categoryTmp.id,
+                                                    label: categoryTmp.label,
+                                                }
                                             }
+                                        )}
+                                        onChange={(e) => {
+                                            if (e) {
+                                                const temp = categories.find(
+                                                    (c) => c.id === e.value
+                                                )
+                                                const boxes: Box[] = []
+                                                temp?.boxes.forEach((b) => {
+                                                    boxes.push({
+                                                        id: b.id,
+                                                        label: b.label,
+                                                        counters: [
+                                                            ...b.counters,
+                                                        ],
+                                                    })
+                                                })
+                                                if (temp) {
+                                                    setSelectedCategory({
+                                                        ...temp,
+                                                        boxes,
+                                                    })
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="add-new-btn"
+                                        onClick={() =>
+                                            setOpenCreateCategory(true)
                                         }
-                                    }}
-                                />
+                                    >
+                                        Criar novo modelo
+                                    </button>
+                                </div>
                             )}
                         </div>
                         <div className="category">
@@ -742,6 +821,18 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                     </Form>
                 </CreateMachineContent>
             )}
+            <HandleUser
+                isOpen={openCreateOperator}
+                onRequestClose={() => setOpenCreateOperator(false)}
+            />
+            <HandlePointOfSale
+                isOpen={openPointOfSale}
+                onRequestClose={() => setOpenPointOfSale(false)}
+            />
+            <CreateCategory
+                isOpen={openCreateCategory}
+                onRequestClose={() => setOpenCreateCategory(false)}
+            />
         </ModalContainer>
     )
 }

@@ -203,7 +203,7 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                                 aqui
                             </button>
                         </div>
-                        {user ? (
+                        {user && !user?.lastAccess ? (
                             <div className="last-access">
                                 <FiAlertCircle />
                                 <p>Usuário não confirmou o e-mail ainda.</p>

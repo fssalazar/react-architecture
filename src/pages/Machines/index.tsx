@@ -138,7 +138,7 @@ export function MachinesPage() {
                         }}
                     >
                         <h1>ID No.</h1>
-                        <h1>Categoria</h1>
+                        <h1>Modelos</h1>
                         <h1>Telemetria</h1>
                         <h1>Operador</h1>
                         <h1>Ponto de Venda</h1>

@@ -34,7 +34,7 @@ export function SideBar({ active }: Props) {
             icon: BiWorld,
         },
         {
-            name: 'Categorias',
+            name: 'Modelos',
             path: RoutesName.categories,
             class: 'categories',
             icon: FaChartPie,

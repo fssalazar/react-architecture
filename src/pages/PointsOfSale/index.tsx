@@ -52,6 +52,8 @@ export function PointsOfSalePage() {
             title="Pontos de veda"
             active="points-of-sale"
             busy={busy}
+            btnLabel="Criar ponto de venda"
+            callback={() => setOpenCreatePointOfSale(true)}
         >
             <PointsOfSaleContainer>
                 <div className="filters">
@@ -75,13 +77,6 @@ export function PointsOfSalePage() {
                                 placeholder="Localização"
                             />
                         </div> */}
-                        <Button
-                            text="Criar ponto de venda"
-                            type="button"
-                            buttonType="FILLED"
-                            color="SECONDARY"
-                            onClick={() => setOpenCreatePointOfSale(true)}
-                        />
                     </div>
                 </div>
                 <div className="points-of-sale-content">

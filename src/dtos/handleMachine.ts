@@ -6,7 +6,7 @@ export interface HandleMachineDto {
     operatorId?: string
     pointOfSaleId?: string
     productId?: string
-    categoryId: string
+    categoryId?: string
     boxes: Box[]
     minStock: number
     gamePrice: number

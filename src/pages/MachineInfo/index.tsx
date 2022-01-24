@@ -13,7 +13,7 @@ import { MachineInfoContainer } from './styles'
 
 export function MachineInfoPage() {
     // hooks
-    const { deleteMachine } = useMachine()
+    const { deleteMachine, getMachine, machine } = useMachine()
     // state
     const [busy, setBusy] = useState(false)
     const [openEditMachine, setOpenEditMachine] = useState(false)
@@ -24,6 +24,7 @@ export function MachineInfoPage() {
     useEffect(() => {
         setBusy(true)
         ;(async () => {
+            await getMachine(params)
             setBusy(false)
         })()
     }, [])
@@ -47,9 +48,7 @@ export function MachineInfoPage() {
                     buttonType="FILLED"
                     color="WARNING"
                     onClick={async () => {
-                        await deleteMachine(
-                            '37f1db45-3871-49ad-a554-e704c8d9548c'
-                        )
+                        await deleteMachine(params)
                     }}
                 />
             </MachineInfoContainer>
@@ -57,6 +56,7 @@ export function MachineInfoPage() {
                 <HandleMachine
                     isOpen={openEditMachine}
                     onRequestClose={() => setOpenEditMachine(false)}
+                    machine={machine}
                 />
             )}
         </MainContainer>

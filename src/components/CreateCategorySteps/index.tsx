@@ -1,7 +1,6 @@
 /* eslint-disable no-constant-condition */
-import React, { useEffect } from 'react'
+import React from 'react'
 import { FiCheck } from 'react-icons/fi'
-import { useCategory } from '../../hooks/useCategory'
 import { CreateCategoryStepsContainer } from './styles'
 
 interface Props {
@@ -16,7 +15,7 @@ export function CreateCategorySteps({ step, title, subtitle }: Props) {
             <div className="step-head">
                 <h1 className="f24-700-primary-gray step-title">{title}</h1>
                 <p className="f16-400-primary-gray">
-                    Complete todos as etapas para criar a categoria
+                    Complete todos as etapas para criar o modelo
                 </p>
             </div>
             <div className="steps">

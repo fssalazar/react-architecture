@@ -87,10 +87,10 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
             <CreateCategoryContent>
                 <CreateCategorySteps
                     step={step}
-                    title="Criar categoria"
+                    title="Criar Modelo"
                     subtitle={
                         step === 'ONE'
-                            ? 'A sua máquina pertence a alguma dessas categorias?'
+                            ? 'A sua máquina pertence a alguma desses modelos?'
                             : ''
                     }
                 />
@@ -247,7 +247,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     <img src={CategoryImg} alt="" />
                                 </div>
                             </button>
-                            <button
+                            {/* <button
                                 type="button"
                                 className="category-type"
                                 onClick={() => {
@@ -305,7 +305,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                 <div className="img">
                                     <img src={CategoryImg} alt="" />
                                 </div>
-                            </button>
+                            </button> */}
                         </div>
                         <div className="action-btns">
                             <Button
@@ -330,7 +330,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                         setStep('TWO')
                                     } else {
                                         toast.info(
-                                            'Selecione um tipo de categoria para prosseguir'
+                                            'Selecione um tipo de modelo para prosseguir'
                                         )
                                     }
                                 }}
@@ -344,7 +344,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                         {!category && typeChosen === 'MULTI_BOXES' && (
                             <div className="choose-boxes">
                                 <h1 className="f16-700-primary-dark">
-                                    Quantas cabines a sua categoria possui?
+                                    Quantas cabines o seu modelo possui?
                                 </h1>
                                 <SelectInput
                                     className="select"
@@ -418,7 +418,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                         {!category && typeChosen === 'MULTI_STOCKS' && (
                             <div className="choose-boxes">
                                 <h1 className="f16-700-primary-dark">
-                                    Quantos estoques a sua categoria possui?
+                                    Quantos estoques o seu modelo possui?
                                 </h1>
                                 <SelectInput
                                     className="select"
@@ -1008,9 +1008,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                 {/* ----------------------- STEP FOUR --------------------- */}
                 {step === 'FOUR' && category && (
                     <div className="category-name">
-                        <h1 className="f16-700-primary-dark">
-                            Nome da categoria
-                        </h1>
+                        <h1 className="f16-700-primary-dark">Nome do modelo</h1>
                         <SimpleInput
                             name="categoryName"
                             onChange={(e) => {
@@ -1060,9 +1058,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                 {step === 'FIVE' && (
                     <div className="category-finished">
                         <img className="check" src={CheckImg} alt="" />
-                        <h1 className="f24-700-primary-dark">
-                            Categoria criada!
-                        </h1>
+                        <h1 className="f24-700-primary-dark">Modelo criado!</h1>
                         <div className="action-btns">
                             <Button
                                 type="button"

@@ -318,10 +318,10 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                 <div className="template-box">
                     <div className="header">
                         <div className="title">
-                            <h1 className="f16-700-dark">Categorias</h1>
+                            <h1 className="f16-700-dark">Modelos</h1>
                             <h2 className="f12-600-gray">
-                                Permissões referentes ao acesso e ações nas
-                                categorias de máquina.
+                                Permissões referentes ao acesso e ações nos
+                                modelos de máquina.
                             </h2>
                         </div>
                         <button type="button">
@@ -349,11 +349,11 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             />
                             <div className="info">
                                 <h2 className="f14-700-dark">
-                                    Acessar categorias
+                                    Acessar modelos de máquinas
                                 </h2>
                                 <p className="f12-500-gray">
                                     O usuário poderá acessar a página de
-                                    categorias.
+                                    modelos.
                                 </p>
                             </div>
                         </label>
@@ -377,11 +377,11 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             />
                             <div className="info">
                                 <h2 className="f14-700-dark">
-                                    Gerenciar categorias
+                                    Gerenciar modelos de máquinas
                                 </h2>
                                 <p className="f12-500-gray">
                                     O usuário poderá criar, excluir ou alterar
-                                    qualquer categoria no sistema.
+                                    qualquer modelo de máquinas no sistema.
                                 </p>
                             </div>
                         </label>

@@ -73,17 +73,19 @@ export function CategoriesPage() {
 
     return (
         <MainContainer
-            path={[{ label: 'Categorias', path: '/categories' }]}
-            title="Categorias"
+            path={[{ label: 'Modelos', path: '/categories' }]}
+            title="Modelos"
             active="categories"
             busy={busy}
+            btnLabel="Criar"
+            callback={() => setOpenCreateCategory(true)}
         >
             <CategoriesContent>
                 <div className="header-content">
                     <div className="select-category">
                         <SelectInput
                             name="categories"
-                            placeholder="Selecione uma categoria"
+                            placeholder="Selecione um modelo"
                             onChange={(e) => {
                                 if (e) {
                                     const temp = categories.find(
@@ -140,22 +142,13 @@ export function CategoriesPage() {
                                                 )
                                             if (response) {
                                                 toast.success(
-                                                    `Categoria ${selectedCategory.label} deletada com sucesso`
+                                                    `Modelo ${selectedCategory.label} deletado com sucesso`
                                                 )
                                             }
                                         }}
                                     />
                                 </>
                             )}
-                            <Button
-                                type="button"
-                                buttonType="FILLED"
-                                color="SECONDARY"
-                                text="Criar"
-                                onClick={() => {
-                                    setOpenCreateCategory(true)
-                                }}
-                            />
                         </div>
                     ) : (
                         <div className="header-btns">
@@ -219,14 +212,14 @@ export function CategoriesPage() {
                                             setCanEdit(false)
                                             if (response) {
                                                 toast.success(
-                                                    `Categoria ${selectedCategory.label} editada com sucesso`
+                                                    `Modelo ${selectedCategory.label} editado com sucesso`
                                                 )
                                                 setSelectedCategory(undefined)
                                             }
                                         }
                                     } else {
                                         toast.warning(
-                                            `Verifique se você preencheu todos os campos para editar a categoria ${selectedCategory?.label}`
+                                            `Verifique se você preencheu todos os campos para editar o modelo ${selectedCategory?.label}`
                                         )
                                     }
                                 }}

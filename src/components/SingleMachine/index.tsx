@@ -23,7 +23,9 @@ export function SingleMachine({ machine }: Props) {
         >
             <h1 className="f14-700-dark">{machine.label}</h1>
             <h1 className="f12-600-gray ">{machine.category.label}</h1>
-            <h1 className="f12-600-gray ">{`STG - ${machine.telemetry.id}`}</h1>
+            <h1 className="f12-600-gray ">{`STG - ${
+                machine.telemetry ? machine.telemetry.id : ''
+            }`}</h1>
             <h1 className="f12-600-gray ">{`${machine.operator?.firstName} ${machine.operator?.lastName}`}</h1>
             <h1 className="f12-600-gray ">{machine.pointOfSale?.label}</h1>
             <h1 className="f12-600-gray center">31 JUL 2021</h1>

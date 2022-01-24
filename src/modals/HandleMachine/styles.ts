@@ -49,6 +49,15 @@ export const CreateMachineContent = styled.div`
                 grid-template-columns: 2fr 3fr;
             }
         }
+        .input-btn {
+            .add-new-btn {
+                border: none;
+                background-color: inherit;
+                color: var(--color-primary);
+                font-size: 1.4rem;
+                padding-left: 1rem;
+            }
+        }
         .payment-type {
             display: flex;
             align-items: center;
@@ -68,6 +77,7 @@ export const CreateMachineContent = styled.div`
                 }
             }
         }
+
         .category-selector {
             width: 50%;
         }

@@ -12,9 +12,15 @@ interface MachineContext {
         search?: string
     ): Promise<{ count: number; machines: Machine[] } | undefined>
     machines: Machine[]
+    machine?: Machine
     count?: number
     createMachine(data: HandleMachineDto): Promise<Machine | undefined>
     deleteMachine(id: string): Promise<boolean | undefined>
+    getMachine(id: string): Promise<Machine | undefined>
+    editMachine(
+        data: HandleMachineDto,
+        id: string
+    ): Promise<Machine | undefined>
 }
 
 interface Props {
@@ -28,6 +34,8 @@ export function MachineProvider({ children }: Props) {
     const { token } = useAuth()
     // state
     const [machines, setMachines] = useState<Machine[]>([])
+    const [machine, setMachine] = useState<Machine>()
+
     const [count, setCount] = useState<number>()
 
     async function getMachines(
@@ -64,6 +72,22 @@ export function MachineProvider({ children }: Props) {
             return undefined
         }
     }
+
+    async function getMachine(id: string) {
+        try {
+            const response = await api.get<Machine>(`/machines/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setMachine(response.data)
+            console.log(response.data)
+            return response.data
+        } catch (error) {
+            return undefined
+        }
+    }
+
     async function createMachine(data: HandleMachineDto) {
         try {
             const response = await api.post<Machine>('/machines', data, {
@@ -72,6 +96,21 @@ export function MachineProvider({ children }: Props) {
                 },
             })
             console.log(data)
+            setMachines([response.data, ...machines])
+            return response.data
+        } catch (error) {
+            return undefined
+        }
+    }
+
+    async function editMachine(data: HandleMachineDto, id: string) {
+        try {
+            const response = await api.patch<Machine>(`/machines/${id}`, data, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setMachine(response.data)
             return response.data
         } catch (error) {
             return undefined
@@ -106,7 +145,10 @@ export function MachineProvider({ children }: Props) {
                 createMachine,
                 machines,
                 count,
+                getMachine,
+                machine,
                 deleteMachine,
+                editMachine,
             }}
         >
             {children}

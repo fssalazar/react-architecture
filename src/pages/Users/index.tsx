@@ -54,6 +54,8 @@ export function UsersPage() {
             title="Usuários"
             active="users"
             busy={busy}
+            btnLabel="Criar usuário"
+            callback={() => setOpenCreateUser(true)}
         >
             <PointsOfSaleContainer>
                 <div className="filters">
@@ -66,15 +68,6 @@ export function UsersPage() {
                             setPageSelected(1)
                         }}
                     />
-                    <div className="location-search">
-                        <Button
-                            text="Criar usuário"
-                            type="button"
-                            buttonType="FILLED"
-                            color="SECONDARY"
-                            onClick={() => setOpenCreateUser(true)}
-                        />
-                    </div>
                 </div>
                 <div className="points-of-sale-content">
                     <PaginationContent>
