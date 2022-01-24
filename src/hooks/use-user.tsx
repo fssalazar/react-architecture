@@ -18,7 +18,8 @@ interface UserContext {
     getUsers(
         limit?: number,
         offset?: number,
-        search?: string
+        search?: string,
+        manageMachine?: boolean
     ): Promise<number | undefined>
     createUser(data: HandleUserDto): Promise<number | undefined>
     chooseUserToEdit(params: GeneralUser | undefined): void
@@ -155,7 +156,12 @@ export function UserProvider({ children }: Props) {
         }
     }
 
-    async function getUsers(limit?: number, offset?: number, search?: string) {
+    async function getUsers(
+        limit?: number,
+        offset?: number,
+        search?: string,
+        manageMachine?: boolean
+    ) {
         if (!limit) {
             limit = 10
         }
@@ -174,6 +180,8 @@ export function UserProvider({ children }: Props) {
                     limit,
                     offset,
                     search_string: search,
+                    manage_machines:
+                        manageMachine === undefined ? undefined : manageMachine,
                 },
             })
             setUsers(response.data.users)

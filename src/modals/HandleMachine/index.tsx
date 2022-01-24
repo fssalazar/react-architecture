@@ -128,8 +128,8 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
 
         setBusy(true)
         ;(async () => {
-            await getUsers()
-            await getTelemetries()
+            await getUsers(undefined, undefined, undefined, true)
+            await getTelemetries(undefined, undefined, undefined, false)
             await getCounterTypes()
             await getCategories()
             await getPointsOfSale()

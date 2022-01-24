@@ -9,7 +9,8 @@ interface TelemetryContext {
     getTelemetries(
         limit?: number,
         offset?: number,
-        search?: string
+        search?: string,
+        inUse?: boolean
     ): Promise<{ count: number; telemetries: Telemetry[] } | undefined>
     telemetry?: Telemetry
     count?: number
@@ -34,7 +35,8 @@ export function TelemetryProvider({ children }: Props) {
     async function getTelemetries(
         limit?: number,
         offset?: number,
-        search?: string
+        search?: string,
+        inUse?: boolean
     ) {
         try {
             if (!limit) {
@@ -55,6 +57,7 @@ export function TelemetryProvider({ children }: Props) {
                     limit,
                     offset,
                     search_string: search,
+                    in_use: inUse === undefined ? undefined : inUse,
                 },
             })
             setCount(response.data.count)
