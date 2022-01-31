@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, { createContext, useContext, ReactNode, useState } from 'react'
+import { toast } from 'react-toastify'
 import { api } from '../service/api'
 import { useAuth } from './use-auth'
 import { handlePointOfSaleDto } from '../dtos/handlePointOfSale'
@@ -65,8 +66,10 @@ export function PointOfSaleProvider({ children }: Props) {
             setCount(response.data.count)
             setPointsOfSale(response.data.pointsOfSale)
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -83,8 +86,10 @@ export function PointOfSaleProvider({ children }: Props) {
             )
             setPointOfSale(response.data)
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -108,8 +113,10 @@ export function PointOfSaleProvider({ children }: Props) {
 
             setPointsOfSale([response.data, ...pointsOfSale])
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -140,8 +147,10 @@ export function PointOfSaleProvider({ children }: Props) {
             })
             console.log(response.data)
             return true
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }

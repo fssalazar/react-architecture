@@ -1,5 +1,6 @@
 import React from 'react'
 import { Switch } from 'react-router-dom'
+import { ProductProvider } from '../hooks/useProduct'
 import { CategoriesPage } from '../pages/Categories'
 import { ChangePasswordPage } from '../pages/ChangePassword'
 import { EmailSentPage } from '../pages/EmailSent'
@@ -10,6 +11,8 @@ import { MachinesPage } from '../pages/Machines'
 import { PasswordChangedPage } from '../pages/PasswordChanged'
 import { PointOfSaleInfoPage } from '../pages/PointOfSaleInfo'
 import { PointsOfSalePage } from '../pages/PointsOfSale'
+import { ProductPage } from '../pages/Product'
+import { ProductsPage } from '../pages/Products'
 import { TelemetriesPage } from '../pages/Telemetries'
 import { TemplatesPage } from '../pages/Templates'
 import { UsersPage } from '../pages/Users'
@@ -29,6 +32,8 @@ export const RoutesName: {
     users: string
     telemetries: string
     machines: string
+    products: string
+    singleProduct: string
 } = {
     login: '/',
     forgotPassword: '/forgot-password',
@@ -43,6 +48,8 @@ export const RoutesName: {
     telemetries: '/telemetries',
     machines: '/machines',
     singleMachine: '/machine-info',
+    products: '/products',
+    singleProduct: '/single-product',
 }
 
 export function Routes() {
@@ -125,6 +132,18 @@ export function Routes() {
                 isPrivate
                 exact
                 component={MachineInfoPage}
+            />
+            <Route
+                path={RoutesName.products}
+                isPrivate
+                exact
+                component={ProductsPage}
+            />
+            <Route
+                path={RoutesName.singleProduct}
+                isPrivate
+                exact
+                component={ProductPage}
             />
         </Switch>
     )

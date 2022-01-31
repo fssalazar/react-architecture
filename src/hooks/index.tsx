@@ -4,6 +4,7 @@ import { MachineProvider } from './use-machine'
 import { UserProvider } from './use-user'
 import { CategoryProvider } from './useCategory'
 import { PointOfSaleProvider } from './usePointOfSale'
+import { ProductProvider } from './useProduct'
 import { TelemetryProvider } from './useTelemetry'
 
 interface AppProvideProps {
@@ -17,7 +18,9 @@ export function AppProvider({ children }: AppProvideProps) {
                 <CategoryProvider>
                     <PointOfSaleProvider>
                         <TelemetryProvider>
-                            <MachineProvider>{children}</MachineProvider>
+                            <MachineProvider>
+                                <ProductProvider>{children}</ProductProvider>
+                            </MachineProvider>
                         </TelemetryProvider>
                     </PointOfSaleProvider>
                 </CategoryProvider>

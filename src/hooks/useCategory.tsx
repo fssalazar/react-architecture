@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, { createContext, useContext, ReactNode, useState } from 'react'
+import { toast } from 'react-toastify'
 import { api } from '../service/api'
 import { useAuth } from './use-auth'
 import { Box, Category, CounterType } from '../entities/category'
@@ -37,8 +38,10 @@ export function CategoryProvider({ children }: Props) {
             })
             setCounterTypes(response.data)
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -52,8 +55,10 @@ export function CategoryProvider({ children }: Props) {
             })
             setCategories([...categories, response.data])
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -77,8 +82,10 @@ export function CategoryProvider({ children }: Props) {
                 }
             )
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -91,8 +98,10 @@ export function CategoryProvider({ children }: Props) {
                 },
             })
             return true
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return false
         }
     }
@@ -108,8 +117,10 @@ export function CategoryProvider({ children }: Props) {
             console.log(response.data)
 
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }

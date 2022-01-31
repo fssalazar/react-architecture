@@ -52,9 +52,9 @@ export function SideBar({ active }: Props) {
             icon: FaChartPie,
         },
         {
-            name: 'Estoque',
-            path: '/stock',
-            class: 'stock',
+            name: 'Produtos',
+            path: '/products',
+            class: 'products',
             icon: FaChartPie,
         },
         {

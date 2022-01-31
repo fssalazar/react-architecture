@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { toast } from 'react-toastify'
 import { LoginDto } from '../dtos/login'
 import { api } from '../service/api'
 
@@ -34,7 +35,10 @@ export function AuthProvider({ children }: Props) {
             setToken(response.data.token)
             console.log(response.data)
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }

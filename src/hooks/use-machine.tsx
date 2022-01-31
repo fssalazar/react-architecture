@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { toast } from 'react-toastify'
 import { HandleMachineDto } from '../dtos/handleMachine'
 import { Machine } from '../entities/machine'
 import { api } from '../service/api'
@@ -68,7 +69,10 @@ export function MachineProvider({ children }: Props) {
             console.log(response.data)
 
             return response.data
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -83,7 +87,10 @@ export function MachineProvider({ children }: Props) {
             setMachine(response.data)
             console.log(response.data)
             return response.data
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -98,7 +105,10 @@ export function MachineProvider({ children }: Props) {
             console.log(data)
             setMachines([response.data, ...machines])
             return response.data
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -112,7 +122,10 @@ export function MachineProvider({ children }: Props) {
             })
             setMachine(response.data)
             return response.data
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -133,7 +146,10 @@ export function MachineProvider({ children }: Props) {
             })
             console.log(response.data)
             return true
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }

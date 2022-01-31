@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable no-param-reassign */
 import React, { createContext, useContext, ReactNode, useState } from 'react'
+import { toast } from 'react-toastify'
 import { api } from '../service/api'
 import { useAuth } from './use-auth'
 import { Telemetry } from '../entities/telemetry'
@@ -63,8 +64,10 @@ export function TelemetryProvider({ children }: Props) {
             setCount(response.data.count)
             setTelemetries(response.data.telemetries)
             return response.data
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }

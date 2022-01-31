@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, { createContext, useContext, ReactNode, useState } from 'react'
+import { toast } from 'react-toastify'
 import { api } from '../service/api'
 import { ChangePasswordDto } from '../dtos/changePassword'
 import { useAuth } from './use-auth'
@@ -55,8 +56,10 @@ export function UserProvider({ children }: Props) {
                 },
             })
             return response
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -67,7 +70,10 @@ export function UserProvider({ children }: Props) {
                 email,
             })
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -76,7 +82,10 @@ export function UserProvider({ children }: Props) {
         try {
             const response = await api.post('/users/reset-password', data)
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -90,7 +99,10 @@ export function UserProvider({ children }: Props) {
             })
             setTemplates(response.data)
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -104,7 +116,10 @@ export function UserProvider({ children }: Props) {
             })
             setTemplates([response.data, ...templates])
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -132,7 +147,10 @@ export function UserProvider({ children }: Props) {
                 return [...state]
             })
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -151,7 +169,10 @@ export function UserProvider({ children }: Props) {
                 return [...state]
             })
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -187,8 +208,10 @@ export function UserProvider({ children }: Props) {
             setUsers(response.data.users)
             setCount(response.data.count)
             return response.status
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -202,8 +225,10 @@ export function UserProvider({ children }: Props) {
             })
             setUsers([...users, response.data])
             return response.status
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -227,8 +252,10 @@ export function UserProvider({ children }: Props) {
                 return [...state]
             })
             return response.status
-        } catch (error) {
+        } catch (error: any) {
             // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
@@ -248,7 +275,10 @@ export function UserProvider({ children }: Props) {
                 return [...state]
             })
             return response.status
-        } catch (error) {
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
             return undefined
         }
     }
