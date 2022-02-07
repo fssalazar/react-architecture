@@ -30,7 +30,10 @@ interface ProductContext {
             | 'TRANSFER_STOCK'
     ): void
     chooseProductToEdit(productData?: Product): void
-    createProduct(data: CreateProductDto): Promise<Product | undefined>
+    createProduct(
+        data: CreateProductDto,
+        file?: File
+    ): Promise<Product | undefined>
     getProducts(
         limit?: number,
         offset?: number,
@@ -64,6 +67,7 @@ interface ProductContext {
         id: string
     ): Promise<Product | undefined>
     deleteProduct(id: string): Promise<boolean | undefined>
+    getProductDetail(id: string): Promise<Product | undefined>
 }
 
 interface Props {
@@ -146,6 +150,23 @@ export function ProductProvider({ children }: Props) {
         }
     }
 
+    async function getProductDetail(id: string) {
+        try {
+            const response = await api.get<Product>(`products/${id}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
+            })
+            setProduct(response.data)
+            return response.data
+        } catch (error: any) {
+            // localStorage.removeItem('@sttigma:token')
+            const e: string = error.response.data.details.pt
+            toast.warning(e)
+            return undefined
+        }
+    }
+
     async function getUserProducts(
         limit?: number,
         offset?: number,
@@ -172,6 +193,7 @@ export function ProductProvider({ children }: Props) {
                     search_string: search,
                 },
             })
+            console.log(response.data)
             setCount(response.data.count)
             setProducts(response.data.products)
             return response.data
@@ -183,8 +205,30 @@ export function ProductProvider({ children }: Props) {
         }
     }
 
-    async function createProduct(data: CreateProductDto) {
+    async function createProduct(data: CreateProductDto, file?: File) {
         try {
+            if (file) {
+                const formData = new FormData()
+                formData.append('file', file)
+                Object.keys(data).forEach((key) => {
+                    formData.append(key, (data as never)[key])
+                })
+
+                const response = await api.post<Product>(
+                    '/products',
+                    formData,
+                    {
+                        headers: {
+                            authorization: `Bearer ${token}`,
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    }
+                )
+
+                setProducts([...products, response.data])
+
+                return response.data
+            }
             const response = await api.post<Product>('/products', data, {
                 headers: {
                     authorization: `Bearer ${token}`,
@@ -317,6 +361,7 @@ export function ProductProvider({ children }: Props) {
                 transferProduct,
                 getUserProducts,
                 deleteProduct,
+                getProductDetail,
             }}
         >
             {children}

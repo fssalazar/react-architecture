@@ -17,6 +17,7 @@ import { SingleProduct } from '../../components/SingleProduct'
 import { HandleProduct } from '../../modals/HandleProduct'
 import { useProduct } from '../../hooks/useProduct'
 import { ManageProduct } from '../../modals/ManageProduct'
+import { useUser } from '../../hooks/use-user'
 
 export function ProductsPage() {
     // hooks
@@ -30,6 +31,7 @@ export function ProductsPage() {
         chooseProductToManage,
         getUserProducts,
     } = useProduct()
+    const { user } = useUser()
     // state
     const [busy, setBusy] = useState(false)
     const [limit, setLimit] = useState<{ label: string; value: number }>({
@@ -88,24 +90,29 @@ export function ProductsPage() {
                     <div className="location-search" />
                 </div>
                 <div className="tab-products">
-                    <button
-                        type="button"
-                        onClick={() => setPersonalStockView(false)}
-                        className={`tab-btn ${
-                            personalStockView ? 'inactive' : 'active'
-                        }`}
-                    >
-                        Fábrica
-                    </button>
-                    <button
-                        onClick={() => setPersonalStockView(true)}
-                        type="button"
-                        className={`tab-btn ${
-                            !personalStockView ? 'inactive' : 'active'
-                        }`}
-                    >
-                        Pessoal
-                    </button>
+                    {user?.type === 'OWNER' ||
+                        (user?.permissions.operateOwnerStock && (
+                            <button
+                                type="button"
+                                onClick={() => setPersonalStockView(false)}
+                                className={`tab-btn ${
+                                    personalStockView ? 'inactive' : 'active'
+                                }`}
+                            >
+                                Depósito
+                            </button>
+                        ))}
+                    {user?.type !== 'OWNER' && (
+                        <button
+                            onClick={() => setPersonalStockView(true)}
+                            type="button"
+                            className={`tab-btn ${
+                                !personalStockView ? 'inactive' : 'active'
+                            }`}
+                        >
+                            Pessoal
+                        </button>
+                    )}
                 </div>
                 <div className="points-of-sale-content">
                     <PaginationContent>

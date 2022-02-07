@@ -30,6 +30,18 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
     const formRef = useRef<FormHandles>(null)
     // state
     const [busyBtn, setBusyBtn] = useState(false)
+    const [currentImage, setCurrentImage] = useState<string>()
+    const [currentFile, setCurrentFile] = useState<File>()
+
+    async function handlePickImage(file: File) {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => {
+            if (reader.result) {
+                setCurrentImage(reader.result.toString())
+            }
+        }
+    }
 
     setTimeout(() => {
         if (product) {
@@ -41,7 +53,7 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
         }
     }, 500)
 
-    async function handleUser(data: CreateProductDto) {
+    async function handleProduct(data: CreateProductDto) {
         setBusyBtn(true)
         try {
             formRef.current?.setErrors({})
@@ -52,7 +64,7 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                 abortEarly: false,
             })
             if (!product) {
-                const response = await createProduct(data)
+                const response = await createProduct(data, currentFile)
                 if (response) {
                     toast.success(`Produto ${data.label} criado com sucesso`)
                 }
@@ -98,7 +110,7 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                 <div className="title">
                     <h1 className="f24-700-primary-dark">Criar Produto</h1>
                 </div>
-                <Form ref={formRef} onSubmit={handleUser} noValidate>
+                <Form ref={formRef} onSubmit={handleProduct} noValidate>
                     <div className="form-avatar">
                         <div className="form">
                             <div className="input">
@@ -149,6 +161,17 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                             />
                         )}
                     </div>
+                    <input
+                        id="file-picker"
+                        name="teste"
+                        type="file"
+                        onChange={async (e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                handlePickImage(e.target.files[0])
+                                setCurrentFile(e.target.files[0])
+                            }
+                        }}
+                    />
                 </Form>
             </CreateProductContent>
         </ModalContainer>

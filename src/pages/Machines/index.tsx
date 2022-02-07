@@ -137,7 +137,7 @@ export function MachinesPage() {
                                 '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr',
                         }}
                     >
-                        <h1>ID No.</h1>
+                        <h1>Num. série</h1>
                         <h1>Modelos</h1>
                         <h1>Telemetria</h1>
                         <h1>Operador</h1>

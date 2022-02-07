@@ -37,7 +37,6 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
             manageCategories: false,
             listTelemetries: false,
             operateOwnerStock: false,
-            fixOwnerStock: false,
             listInventory: false,
             generateReports: false,
             accessOperationalInfo: false,
@@ -435,7 +434,7 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                 <div className="template-box">
                     <div className="header">
                         <div className="title">
-                            <h1 className="f16-700-dark">Fábrica</h1>
+                            <h1 className="f16-700-dark">Depósito</h1>
                             <h2 className="f12-600-gray">
                                 Permissões referentes ao controle do estoque da
                                 empresa.
@@ -466,40 +465,12 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                             />
                             <div className="info">
                                 <h2 className="f14-700-dark">
-                                    Gerenciar estoque
+                                    Gerenciar produtos
                                 </h2>
                                 <p className="f12-500-gray">
                                     O usuário poderá criar, adicionar, deletar
                                     ou transferir os produtos do estoque da
                                     empresa para outros usuários ou máquinas.
-                                </p>
-                            </div>
-                        </label>
-                        <label
-                            htmlFor="fixOwnerStock"
-                            className="template-item"
-                        >
-                            <input
-                                type="checkbox"
-                                id="fixOwnerStock"
-                                checked={template.permissions.fixOwnerStock}
-                                onChange={(e) =>
-                                    setTemplate({
-                                        ...template,
-                                        permissions: {
-                                            ...template.permissions,
-                                            fixOwnerStock: e.target.checked,
-                                        },
-                                    })
-                                }
-                            />
-                            <div className="info">
-                                <h2 className="f14-700-dark">
-                                    Corrigir estoque
-                                </h2>
-                                <p className="f12-500-gray">
-                                    O usuário poderá alterar a quantidade de
-                                    prêmios direto no estoque da empresa.
                                 </p>
                             </div>
                         </label>

@@ -1,12 +1,16 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-array-index-key */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable no-param-reassign */
+// /* eslint-disable import/no-unresolved */
+// /* eslint-disable @typescript-eslint/no-non-null-assertion */
+// /* eslint-disable react/no-array-index-key */
+// /* eslint-disable no-param-reassign */
 import React, { useEffect, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { Pagination } from '@material-ui/lab'
 import { v4 } from 'uuid'
-import { Button } from '../../components/Button'
 import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
@@ -204,3 +208,56 @@ export function UsersPage() {
         </MainContainer>
     )
 }
+
+// import axios from 'axios'
+// import React, { useState } from 'react'
+
+// export function UsersPage() {
+//     const ITEMS_API_URL = 'https://example.com/api/items'
+//     const api = axios.create({
+//         baseURL: ITEMS_API_URL,
+//     })
+
+//     const [results, setResults] = useState<any[]>([])
+//     const [isLoading, setIsLoading] = useState(false)
+
+//     async function requestApi(p: string) {
+//         try {
+//             const response = await api.get('', {
+//                 params: {
+//                     q: p,
+//                 },
+//             })
+//             console.log(response.data)
+//             setResults(response.data)
+//             return response.data
+//         } catch (error) {
+//             return undefined
+//         }
+//     }
+
+//     return (
+//         <>
+//             <div className="wrapper">
+//                 <div className={`control ${isLoading && 'is-loading'}`}>
+//                     <input
+//                         type="text"
+//                         className="input"
+//                         onChange={async (e: any) => {
+//                             if (e) {
+//                                 await requestApi(e.target.value)
+//                             }
+//                         }}
+//                     />
+//                 </div>
+//                 {results && results.length > 0 && (
+//                     <div className="list">
+//                         {results.map((result) => {
+//                             return <a className="list-item">{result}</a>
+//                         })}
+//                     </div>
+//                 )}
+//             </div>
+//         </>
+//     )
+// }

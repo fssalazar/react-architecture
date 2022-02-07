@@ -618,7 +618,7 @@ export function TemplatesPage() {
                                         <div className="header">
                                             <div className="title">
                                                 <h1 className="f16-700-dark">
-                                                    Fábrica
+                                                    Depósito
                                                 </h1>
                                                 <h2 className="f12-600-gray">
                                                     Permissões referentes ao
@@ -658,7 +658,7 @@ export function TemplatesPage() {
                                                 />
                                                 <div className="info">
                                                     <h2 className="f14-700-dark">
-                                                        Gerenciar estoque
+                                                        Gerenciar produtos
                                                     </h2>
                                                     <p className="f12-500-gray">
                                                         O usuário poderá criar,
@@ -667,43 +667,6 @@ export function TemplatesPage() {
                                                         do estoque da empresa
                                                         para outros usuários ou
                                                         máquinas.
-                                                    </p>
-                                                </div>
-                                            </label>
-                                            <label
-                                                htmlFor="fixOwnerStock"
-                                                className="selectedTemplate-item"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    id="fixOwnerStock"
-                                                    checked={
-                                                        selectedTemplate
-                                                            .permissions
-                                                            .fixOwnerStock
-                                                    }
-                                                    disabled={!canEdit}
-                                                    onChange={(e) =>
-                                                        setSelectedTemplate({
-                                                            ...selectedTemplate,
-                                                            permissions: {
-                                                                ...selectedTemplate.permissions,
-                                                                fixOwnerStock:
-                                                                    e.target
-                                                                        .checked,
-                                                            },
-                                                        })
-                                                    }
-                                                />
-                                                <div className="info">
-                                                    <h2 className="f14-700-dark">
-                                                        Corrigir estoque
-                                                    </h2>
-                                                    <p className="f12-500-gray">
-                                                        O usuário poderá alterar
-                                                        a quantidade de prêmios
-                                                        direto no estoque da
-                                                        empresa.
                                                     </p>
                                                 </div>
                                             </label>

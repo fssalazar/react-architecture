@@ -30,6 +30,7 @@ interface UserContext {
     templates: Template[]
     users: GeneralUser[]
     count?: number
+    user?: GeneralUser
 }
 
 interface Props {
@@ -40,9 +41,10 @@ const UserContext = createContext({} as UserContext)
 
 export function UserProvider({ children }: Props) {
     // hook
-    const { token } = useAuth()
+    const { token, logout } = useAuth()
     const [templates, setTemplates] = useState<Template[]>([])
     const [users, setUsers] = useState<GeneralUser[]>([])
+    const [user, setUser] = useState<GeneralUser>()
 
     // State
     const [userToEdit, setUserToEdit] = useState<GeneralUser>()
@@ -55,11 +57,10 @@ export function UserProvider({ children }: Props) {
                     authorization: `Bearer ${token}`,
                 },
             })
-            return response
+            console.log(response.data)
+            setUser(response.data)
+            return response.data
         } catch (error: any) {
-            // localStorage.removeItem('@sttigma:token')
-            const e: string = error.response.data.details.pt
-            toast.warning(e)
             return undefined
         }
     }
@@ -306,6 +307,7 @@ export function UserProvider({ children }: Props) {
                 templates,
                 users,
                 count,
+                user,
             }}
         >
             {children}

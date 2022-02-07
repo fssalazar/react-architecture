@@ -13,4 +13,10 @@ export const AvatarContainer = styled.div`
         font-size: 1.4rem;
         font-weight: 700;
     }
+    img {
+        height: 3rem;
+        width: 3rem;
+        border-radius: 50%;
+        object-fit: cover;
+    }
 `

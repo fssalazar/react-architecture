@@ -2,13 +2,14 @@ import React from 'react'
 import { AvatarContainer } from './styles'
 
 interface Props {
-    label: string
+    label?: string
+    img?: string
 }
 
-export function Avatar({ label }: Props) {
+export function Avatar({ label, img }: Props) {
     return (
         <AvatarContainer>
-            <h1>{label}</h1>
+            {img ? <img src={img} alt="" /> : <h1>{label}</h1>}
         </AvatarContainer>
     )
 }

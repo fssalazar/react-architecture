@@ -261,7 +261,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                         id="form-points"
                     >
                         <div className="grid grid-1-1">
-                            <Input name="label" label="ID No." />
+                            <Input name="label" label="Num. série" />
                             <SelectInput
                                 name="telemetryId"
                                 value={

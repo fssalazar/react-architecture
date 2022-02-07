@@ -6,7 +6,6 @@ export interface GeneralUser {
     permissions: {
         accessOperationalInfo: boolean
         fixMachineStock: boolean
-        fixOwnerStock: boolean
         generateReports: boolean
         listCategories: boolean
         listCollections: boolean

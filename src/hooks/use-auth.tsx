@@ -44,6 +44,7 @@ export function AuthProvider({ children }: Props) {
     }
 
     function logout() {
+        console.log('a')
         setToken(undefined)
         window.location.reload()
         localStorage.removeItem('@ada:token')

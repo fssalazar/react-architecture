@@ -13,7 +13,6 @@ export interface Template {
         manageCategories: boolean
         listTelemetries: boolean
         operateOwnerStock: boolean
-        fixOwnerStock: boolean
         listInventory: boolean
         generateReports: boolean
         accessOperationalInfo: boolean

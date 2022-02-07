@@ -13,10 +13,22 @@ export interface Stock {
 export interface Product {
     id: string
     label: string
-    ownerId: string
     externalId?: string
-    // photo?: Photo
+    photoUrl: string
     isActive: boolean
     quantity: number
     stock: Stock[]
+    machineStock: {
+        category: string
+        label: string
+        minStock: number
+        stock: number
+    }[]
+    userStock: {
+        name: string
+        photoUrl: string
+        stock: number
+        userTemplateLabel: string
+    }[]
+    totalStock: number
 }
