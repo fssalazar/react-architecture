@@ -182,10 +182,30 @@ export default createGlobalStyle`
     font-size: 1.4rem;
     font-weight: 400;
   }
+  .f14-400-gray {
+    color: var(--color-gray);
+    font-size: 1.4rem;
+    font-weight: 400;
+  }
   .f14-500-gray {
     color: var(--color-gray);
     font-size: 1.4rem;
     font-weight: 500;
+  }
+  .f14-700-gray {
+    color: var(--color-gray);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .f12-500-gray {
+    color: var(--color-gray);
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+  .f12-700-dark {
+    color: var(--color-dark);
+    font-size: 1.2rem;
+    font-weight: 700;
   }
   .f16-700-dark {
     color: var(--color-dark);

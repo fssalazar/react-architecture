@@ -51,7 +51,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
     const [busyBtn, setBusyBtn] = useState(false)
     const [busy, setBusy] = useState(false)
     const [operator, setOperator] = useState<{ value: string; label: string }>({
-        label: 'Selecione um operador',
+        label: 'Selecione um usuário',
         value: 'none',
     })
     const [pointOfSale, setPointOfSale] = useState<{
@@ -182,6 +182,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                         toast.success(
                             `Máquina ${data.label} editada com sucesso`
                         )
+                        onRequestClose()
                     }
                 } else {
                     const createMachineData: HandleMachineDto = {
@@ -206,6 +207,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                         toast.success(
                             `Máquina ${data.label} criada com sucesso`
                         )
+                        onRequestClose()
                     }
                 }
             } else {
@@ -295,7 +297,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                                             ? undefined
                                             : operator
                                     }
-                                    placeholder="Operador"
+                                    placeholder="Usuário"
                                     options={users.map((operatorTmp) => {
                                         return {
                                             value: operatorTmp.id,
@@ -316,7 +318,7 @@ export function HandleMachine({ isOpen, onRequestClose, machine }: Props) {
                                     className="add-new-btn"
                                     onClick={() => setOpenCreateOperator(true)}
                                 >
-                                    Criar novo operador
+                                    Criar novo usuário
                                 </button>
                             </div>
                             <div className="input-btn">

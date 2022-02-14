@@ -9,6 +9,8 @@ import { Form } from '@unform/web'
 import React, { useRef, useState } from 'react'
 import ModalContainer from 'react-modal'
 import { toast } from 'react-toastify'
+import { FaFileImport } from 'react-icons/fa'
+import { FiUpload } from 'react-icons/fi'
 import { Button } from '../../components/Button'
 import { Input } from '../../unformInputs/Input'
 import { getValidationErrors } from '../../utils/getValidationErrors'
@@ -16,6 +18,7 @@ import { CreateProductContent } from './styles'
 import { CreateProductDto } from '../../dtos/CreateProduct'
 import { Product } from '../../entities/product'
 import { useProduct } from '../../hooks/useProduct'
+import dragImg from '../../assets/dragimg.png'
 
 interface Props {
     isOpen: boolean
@@ -30,7 +33,15 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
     const formRef = useRef<FormHandles>(null)
     // state
     const [busyBtn, setBusyBtn] = useState(false)
-    const [currentImage, setCurrentImage] = useState<string>()
+    const [currentImage, setCurrentImage] = useState<string | undefined>(() => {
+        if (product) {
+            if (product.photo) {
+                return product.photo.url
+            }
+            return undefined
+        }
+        return undefined
+    })
     const [currentFile, setCurrentFile] = useState<File>()
 
     async function handlePickImage(file: File) {
@@ -51,6 +62,7 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                 quantity: product.quantity || '',
             })
         }
+        console.log(product)
     }, 500)
 
     async function handleProduct(data: CreateProductDto) {
@@ -67,6 +79,7 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                 const response = await createProduct(data, currentFile)
                 if (response) {
                     toast.success(`Produto ${data.label} criado com sucesso`)
+                    onRequestClose()
                 }
             } else {
                 const editProductData: CreateProductDto = {
@@ -76,6 +89,7 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                 const response = await editProduct(editProductData, product.id)
                 if (response) {
                     toast.success(`Produto ${data.label} criado com sucesso`)
+                    onRequestClose()
                 }
             }
             setBusyBtn(false)
@@ -133,6 +147,57 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                             )}
                         </div>
                     </div>
+                    <div className="img">
+                        <h3 className="img-title">Imagem (Opcional)</h3>
+                        <label htmlFor="file-picker" className="img-container">
+                            {currentImage ? (
+                                <div className="container-current-img">
+                                    <img
+                                        src={currentImage}
+                                        alt=""
+                                        className="current-img"
+                                    />
+                                    <button
+                                        className="cancel-img"
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentImage(undefined)
+                                        }
+                                    >
+                                        X
+                                    </button>
+                                </div>
+                            ) : (
+                                <>
+                                    <FiUpload />
+                                    <h2>
+                                        Arraste e solte a foto do produto ou
+                                        clique aqui.
+                                    </h2>
+                                    <img src={dragImg} alt="" />
+                                    <input
+                                        id="file-picker"
+                                        name="teste"
+                                        type="file"
+                                        className="img-input"
+                                        onChange={async (e) => {
+                                            if (
+                                                e.target.files &&
+                                                e.target.files[0]
+                                            ) {
+                                                handlePickImage(
+                                                    e.target.files[0]
+                                                )
+                                                setCurrentFile(
+                                                    e.target.files[0]
+                                                )
+                                            }
+                                        }}
+                                    />
+                                </>
+                            )}
+                        </label>
+                    </div>
                     <div className="btns">
                         <Button
                             text="Cancelar"
@@ -161,17 +226,6 @@ export function HandleProduct({ isOpen, onRequestClose, product }: Props) {
                             />
                         )}
                     </div>
-                    <input
-                        id="file-picker"
-                        name="teste"
-                        type="file"
-                        onChange={async (e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                handlePickImage(e.target.files[0])
-                                setCurrentFile(e.target.files[0])
-                            }
-                        }}
-                    />
                 </Form>
             </CreateProductContent>
         </ModalContainer>

@@ -18,6 +18,7 @@ export interface Product {
     isActive: boolean
     quantity: number
     stock: Stock[]
+    photo?: { url: string }
     machineStock: {
         category: string
         label: string

@@ -90,7 +90,7 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                         )
                     }
                     setBusyBtn(false)
-
+                    onRequestClose()
                     return
                 }
             }
@@ -117,6 +117,7 @@ export function HandleUser({ isOpen, onRequestClose, user }: Props) {
                     )
                 }
                 setBusyBtn(false)
+                onRequestClose()
             }
             setBusyBtn(false)
         } catch (error) {

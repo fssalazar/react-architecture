@@ -83,7 +83,7 @@ export function HandlePointOfSale({
                     )
                 }
                 setBusyBtn(false)
-
+                onRequestClose()
                 return
             }
             const createPointOfSaleData: handlePointOfSaleDto = {
@@ -99,6 +99,8 @@ export function HandlePointOfSale({
             const response = await createPointOfSale(createPointOfSaleData)
             if (response) {
                 toast.success(`Ponto de venda ${data.label} criado com sucesso`)
+                setBusyBtn(false)
+                onRequestClose()
             }
             setBusyBtn(false)
         } catch (error) {

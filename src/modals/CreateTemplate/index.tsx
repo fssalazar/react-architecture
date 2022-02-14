@@ -767,6 +767,7 @@ export function CreateTemplate({ isOpen, onRequestClose }: Props) {
                                 toast.success(
                                     `Cargo ${template.label} criado com sucesso`
                                 )
+                                onRequestClose()
                             })()
                             setBusyBtn(false)
                         }}

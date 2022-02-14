@@ -6,6 +6,7 @@ import { useAuth } from './use-auth'
 import { Product } from '../entities/product'
 import { CreateProductDto } from '../dtos/CreateProduct'
 import { TransferProductDto } from '../dtos/transferProduct'
+import { useUser } from './use-user'
 
 interface ProductContext {
     products: Product[]
@@ -17,6 +18,7 @@ interface ProductContext {
             | 'ADD'
             | 'REMOVE'
             | 'TRANSFER_USER'
+            | 'USER_TRANSFER_USER'
             | 'TRANSFER_MACHINE'
             | 'TRANSFER_STOCK'
     }
@@ -26,6 +28,7 @@ interface ProductContext {
             | 'ADD'
             | 'REMOVE'
             | 'TRANSFER_USER'
+            | 'USER_TRANSFER_USER'
             | 'TRANSFER_MACHINE'
             | 'TRANSFER_STOCK'
     ): void
@@ -64,10 +67,13 @@ interface ProductContext {
     addProduct(quantity: number, id: string): Promise<Product | undefined>
     transferProduct(
         data: TransferProductDto,
-        id: string
+        id: string,
+        from?: 'USER' | undefined
     ): Promise<Product | undefined>
     deleteProduct(id: string): Promise<boolean | undefined>
     getProductDetail(id: string): Promise<Product | undefined>
+    chooseProductToDelete(productData: Product | undefined): void
+    productToDelete?: Product
 }
 
 interface Props {
@@ -79,9 +85,11 @@ const ProductContext = createContext({} as ProductContext)
 export function ProductProvider({ children }: Props) {
     // hook
     const { token } = useAuth()
+    const { user } = useUser()
     // State
     const [products, setProducts] = useState<Product[]>([])
     const [product, setProduct] = useState<Product>()
+    const [productToDelete, setProductToDelete] = useState<Product>()
     const [count, setCount] = useState<number>()
     const [productToManage, setProductToManage] = useState<{
         product: Product
@@ -89,6 +97,7 @@ export function ProductProvider({ children }: Props) {
             | 'ADD'
             | 'REMOVE'
             | 'TRANSFER_USER'
+            | 'USER_TRANSFER_USER'
             | 'TRANSFER_MACHINE'
             | 'TRANSFER_STOCK'
     }>()
@@ -100,6 +109,7 @@ export function ProductProvider({ children }: Props) {
             | 'ADD'
             | 'REMOVE'
             | 'TRANSFER_USER'
+            | 'USER_TRANSFER_USER'
             | 'TRANSFER_MACHINE'
             | 'TRANSFER_STOCK'
     ) {
@@ -111,6 +121,9 @@ export function ProductProvider({ children }: Props) {
     }
     function chooseProductToEdit(productData: Product | undefined) {
         setProductToEdit(productData)
+    }
+    function chooseProductToDelete(productData: Product | undefined) {
+        setProductToDelete(productData)
     }
 
     async function getProducts(
@@ -317,7 +330,11 @@ export function ProductProvider({ children }: Props) {
         }
     }
 
-    async function transferProduct(data: TransferProductDto, id: string) {
+    async function transferProduct(
+        data: TransferProductDto,
+        id: string,
+        from?: 'USER' | undefined
+    ) {
         try {
             const response = await api.patch<Product>(
                 `products/${id}/transfer`,
@@ -330,6 +347,15 @@ export function ProductProvider({ children }: Props) {
             )
             setProducts((state) => {
                 const index = state.findIndex((s) => s.id === id)
+                if (from === 'USER') {
+                    if (index !== undefined) {
+                        const stock = state[index].stock.filter(
+                            (s) => s.referenceId === user?.id
+                        )
+                        state[index] = { ...response.data, stock }
+                    }
+                    return state
+                }
                 if (index !== undefined) {
                     state[index] = response.data
                 }
@@ -362,6 +388,8 @@ export function ProductProvider({ children }: Props) {
                 getUserProducts,
                 deleteProduct,
                 getProductDetail,
+                chooseProductToDelete,
+                productToDelete,
             }}
         >
             {children}

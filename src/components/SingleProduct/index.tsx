@@ -4,15 +4,7 @@ import React from 'react'
 import { Menu, MenuItem, MenuButton, SubMenu } from '@szhsin/react-menu'
 import { SingleProductContainer } from './styles'
 import '@szhsin/react-menu/dist/index.css'
-import {
-    FiBox,
-    FiEdit,
-    FiEye,
-    FiMinus,
-    FiPlus,
-    FiTrash,
-    FiUser,
-} from 'react-icons/fi'
+import { FiEdit, FiEye, FiMinus, FiPlus, FiTrash, FiUser } from 'react-icons/fi'
 import { Product } from '../../entities/product'
 import { useProduct } from '../../hooks/useProduct'
 import {
@@ -42,7 +34,11 @@ export function SingleProduct({ product }: Props) {
     }
     const history = useHistory()
     // hooks
-    const { chooseProductToEdit, chooseProductToManage } = useProduct()
+    const {
+        chooseProductToEdit,
+        chooseProductToManage,
+        chooseProductToDelete,
+    } = useProduct()
     return (
         <SingleProductContainer
             style={{ gridTemplateColumns: '2fr 2fr 2fr 2fr 2fr 0.5fr' }}
@@ -78,15 +74,6 @@ export function SingleProduct({ product }: Props) {
                     >
                         <FiUser style={{ marginRight: '0.5rem' }} />
                         Usuário
-                    </MenuItem>
-                    <MenuItem
-                        styles={menuItemStyles}
-                        onClick={() =>
-                            chooseProductToManage(product, 'TRANSFER_MACHINE')
-                        }
-                    >
-                        <FiBox style={{ marginRight: '0.5rem' }} />
-                        Máquina
                     </MenuItem>
                 </SubMenu>
                 <MenuItem
@@ -124,6 +111,7 @@ export function SingleProduct({ product }: Props) {
                 <MenuItem
                     styles={{ ...menuItemStyles, color: 'red' }}
                     className="menu delete"
+                    onClick={() => chooseProductToDelete(product)}
                 >
                     <FiTrash style={{ marginRight: '0.5rem' }} />
                     Deletar

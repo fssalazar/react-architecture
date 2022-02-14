@@ -16,7 +16,7 @@ import { CreateProductContent } from './styles'
 import { Product, ProductStockType } from '../../entities/product'
 import { useProduct } from '../../hooks/useProduct'
 import {
-    totalProductInMachine,
+    totalProductInEmployee,
     totalProductInStock,
 } from '../../utils/product/function'
 import { useUser } from '../../hooks/use-user'
@@ -32,6 +32,7 @@ interface Props {
         | 'ADD'
         | 'REMOVE'
         | 'TRANSFER_USER'
+        | 'USER_TRANSFER_USER'
         | 'TRANSFER_MACHINE'
         | 'TRANSFER_STOCK'
 }
@@ -52,7 +53,7 @@ export function ManageProduct({
     const [busy, setBusy] = useState(false)
     const [busyBtn, setBusyBtn] = useState(false)
     const [operator, setOperator] = useState<{ value: string; label: string }>({
-        label: 'Selecione um operador',
+        label: 'Selecione um usuário',
         value: 'none',
     })
     const [machine, setMachine] = useState<{ value: string; label: string }>({
@@ -71,11 +72,20 @@ export function ManageProduct({
                 abortEarly: false,
             })
             if (type === 'ADD') {
+                if (data.quantity > totalProductInStock(product)) {
+                    toast.warning(
+                        'Você não possui essa quantidade de itens no estoque'
+                    )
+                    setBusyBtn(false)
+
+                    return
+                }
                 const response = await addProduct(data.quantity, product.id)
                 if (response) {
                     toast.success(
                         `A quantidade de ${data.quantity} foram adicionadas ao ${product.label}`
                     )
+                    onRequestClose()
                 }
             }
             if (type === 'REMOVE') {
@@ -83,6 +93,74 @@ export function ManageProduct({
                 if (response) {
                     toast.success(
                         `A quantidade de ${data.quantity} foram removidas do ${product.label}`
+                    )
+                    onRequestClose()
+                }
+            }
+            if (type === 'TRANSFER_STOCK') {
+                if (data.quantity > totalProductInEmployee(product)) {
+                    toast.warning(
+                        'Você não possui essa quantidade de itens no estoque'
+                    )
+                    setBusyBtn(false)
+
+                    return
+                }
+                const transferData: TransferProductDto = {
+                    from: {
+                        type: ProductStockType.EMPLOYEE,
+                    },
+                    to: {
+                        type: ProductStockType.FACTORY,
+                    },
+                    quantity: data.quantity,
+                }
+                const response = await transferProduct(
+                    transferData,
+                    product.id,
+                    'USER'
+                )
+                if (response) {
+                    toast.success(
+                        `A quantidade de ${data.quantity} foi transferida para o usuário ${operator.label}`
+                    )
+                    onRequestClose()
+                }
+            }
+            if (type === 'USER_TRANSFER_USER') {
+                if (operator.value !== 'none') {
+                    if (data.quantity > totalProductInEmployee(product)) {
+                        toast.warning(
+                            'Você não possui essa quantidade de itens no estoque'
+                        )
+                        setBusyBtn(false)
+
+                        return
+                    }
+                    const transferData: TransferProductDto = {
+                        from: {
+                            type: ProductStockType.EMPLOYEE,
+                        },
+                        to: {
+                            type: ProductStockType.EMPLOYEE,
+                            id: operator.value,
+                        },
+                        quantity: data.quantity,
+                    }
+                    const response = await transferProduct(
+                        transferData,
+                        product.id,
+                        'USER'
+                    )
+                    if (response) {
+                        toast.success(
+                            `A quantidade de ${data.quantity} foi transferida para o usuário ${operator.label}`
+                        )
+                        onRequestClose()
+                    }
+                } else {
+                    toast.warning(
+                        'Selecione o usuário para qual deseja efetuar a transferencia'
                     )
                 }
             }
@@ -112,12 +190,13 @@ export function ManageProduct({
                     )
                     if (response) {
                         toast.success(
-                            `A quantidade de ${data.quantity} foi transferida para o usuário ${operator.label}`
+                            `A quantidade de ${data.quantity} foi transferida o depósito`
                         )
+                        onRequestClose()
                     }
                 } else {
                     toast.warning(
-                        'Selecione o operador para qual deseja efetuar a transferencia'
+                        'Selecione o usuário para qual deseja efetuar a transferencia'
                     )
                 }
             }
@@ -149,6 +228,7 @@ export function ManageProduct({
                         toast.success(
                             `A quantidade de ${data.quantity} foi transferida para a máquina ${machine.label}`
                         )
+                        onRequestClose()
                     }
                 } else {
                     toast.warning(
@@ -172,8 +252,8 @@ export function ManageProduct({
     useEffect(() => {
         setBusy(true)
         ;(async () => {
-            if (type === 'TRANSFER_USER') {
-                await getUsers(undefined, undefined, undefined, true)
+            if (type === 'TRANSFER_USER' || type === 'USER_TRANSFER_USER') {
+                await getUsers(undefined, undefined, undefined)
             }
             if (type === 'TRANSFER_MACHINE') {
                 await getMachines(1000, 0)
@@ -209,7 +289,8 @@ export function ManageProduct({
                             Remover produto
                         </h1>
                     )}
-                    {type === 'TRANSFER_USER' && (
+                    {(type === 'TRANSFER_USER' ||
+                        type === 'USER_TRANSFER_USER') && (
                         <h1 className="f24-700-primary-dark">
                             Transferir para usuário
                         </h1>
@@ -217,6 +298,11 @@ export function ManageProduct({
                     {type === 'TRANSFER_MACHINE' && (
                         <h1 className="f24-700-primary-dark">
                             Transferir para máquina
+                        </h1>
+                    )}
+                    {type === 'TRANSFER_STOCK' && (
+                        <h1 className="f24-700-primary-dark">
+                            Transferir para depósito
                         </h1>
                     )}
                 </div>
@@ -231,14 +317,20 @@ export function ManageProduct({
                             </div>
                             <div className="item">
                                 <h1 style={{ color: 'red' }}>
-                                    {totalProductInStock(product)}
+                                    {type === 'TRANSFER_STOCK' ||
+                                    type === 'USER_TRANSFER_USER' ? (
+                                        <>{totalProductInEmployee(product)}</>
+                                    ) : (
+                                        <>{totalProductInStock(product)}</>
+                                    )}
                                 </h1>
                                 <p>Quantidade</p>
                             </div>
                         </div>
                         <div className="form-avatar">
                             <div className="form">
-                                {type === 'TRANSFER_USER' && (
+                                {(type === 'TRANSFER_USER' ||
+                                    type === 'USER_TRANSFER_USER') && (
                                     <SelectInput
                                         name="operatorId"
                                         value={
@@ -246,13 +338,15 @@ export function ManageProduct({
                                                 ? undefined
                                                 : operator
                                         }
-                                        placeholder="Operador"
-                                        options={users.map((operatorTmp) => {
-                                            return {
-                                                value: operatorTmp.id,
-                                                label: `${operatorTmp.firstName} ${operatorTmp.lastName}`,
-                                            }
-                                        })}
+                                        placeholder="Usuário"
+                                        options={users
+                                            .filter((u) => u.type !== 'OWNER')
+                                            .map((operatorTmp) => {
+                                                return {
+                                                    value: operatorTmp.id,
+                                                    label: `${operatorTmp.firstName} ${operatorTmp.lastName}`,
+                                                }
+                                            })}
                                         onChange={(e) => {
                                             if (e) {
                                                 setOperator({

@@ -1,3 +1,4 @@
+/* eslint-disable no-return-await */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable react/no-array-index-key */
@@ -6,6 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { Pagination } from '@material-ui/lab'
 import { v4 } from 'uuid'
+import { toast } from 'react-toastify'
 import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
@@ -18,6 +20,8 @@ import { HandleProduct } from '../../modals/HandleProduct'
 import { useProduct } from '../../hooks/useProduct'
 import { ManageProduct } from '../../modals/ManageProduct'
 import { useUser } from '../../hooks/use-user'
+import { SinglePersonalProduct } from '../../components/SinglePersnoalProduct '
+import { WarningModal } from '../../modals/WarningModal'
 
 export function ProductsPage() {
     // hooks
@@ -30,6 +34,9 @@ export function ProductsPage() {
         productToManage,
         chooseProductToManage,
         getUserProducts,
+        productToDelete,
+        chooseProductToDelete,
+        deleteProduct,
     } = useProduct()
     const { user } = useUser()
     // state
@@ -165,24 +172,46 @@ export function ProductsPage() {
                         </div>
                     </PaginationContent>
                 </div>
-                <Table>
-                    <div
-                        className="table-header"
-                        style={{
-                            gridTemplateColumns: '2fr 2fr 2fr 2fr 2fr 0.5fr',
-                        }}
-                    >
-                        <h1>Cód. Produto</h1>
-                        <h1>Nome</h1>
-                        <h1>No Estoque</h1>
-                        <h1>Com usuários</h1>
-                        <h1>Em máquinas</h1>
-                        <div />
-                    </div>
-                    {products.map((p) => {
-                        return <SingleProduct product={p} key={v4()} />
-                    })}
-                </Table>
+                {personalStockView ? (
+                    <Table>
+                        <div
+                            className="table-header"
+                            style={{
+                                gridTemplateColumns: '2fr 2fr 2fr 2fr',
+                            }}
+                        >
+                            <h1>Cód. Produto</h1>
+                            <h1>Nome</h1>
+                            <h1>Comigo</h1>
+                            <div />
+                        </div>
+                        {products.map((p) => {
+                            return (
+                                <SinglePersonalProduct product={p} key={v4()} />
+                            )
+                        })}
+                    </Table>
+                ) : (
+                    <Table>
+                        <div
+                            className="table-header"
+                            style={{
+                                gridTemplateColumns:
+                                    '2fr 2fr 2fr 2fr 2fr 0.5fr',
+                            }}
+                        >
+                            <h1>Cód. Produto</h1>
+                            <h1>Nome</h1>
+                            <h1>No Estoque</h1>
+                            <h1>Com usuários</h1>
+                            <h1>Em máquinas</h1>
+                            <div />
+                        </div>
+                        {products.map((p) => {
+                            return <SingleProduct product={p} key={v4()} />
+                        })}
+                    </Table>
+                )}
                 <PaginationContent>
                     <div className="results">
                         <p>{`Mostrando ${
@@ -252,6 +281,23 @@ export function ProductsPage() {
                     product={productToManage.product}
                 />
             )}
+            <WarningModal
+                isOpen={!!productToDelete}
+                onRequestClose={() => chooseProductToDelete(undefined)}
+                callback={async () => {
+                    const response = await deleteProduct(
+                        productToDelete?.id || ''
+                    )
+                    if (response) {
+                        toast.success(
+                            `Produto ${productToDelete?.label} deletado com sucesso`
+                        )
+                        chooseProductToDelete(undefined)
+                    }
+                }}
+                title="Deletar produto"
+                subTitle={`Tem certeza que deseja deletar o produto ${productToDelete?.label}?`}
+            />
         </MainContainer>
     )
 }
