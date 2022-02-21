@@ -1,8 +1,9 @@
 import React from 'react'
 import { Switch } from 'react-router-dom'
-import { ProductProvider } from '../hooks/useProduct'
 import { CategoriesPage } from '../pages/Categories'
 import { ChangePasswordPage } from '../pages/ChangePassword'
+import { CollectionInfoPage } from '../pages/CollectionInfo'
+import { CollectionsPage } from '../pages/Collections'
 import { EmailSentPage } from '../pages/EmailSent'
 import { ForgotPasswordPage } from '../pages/ForgotPassword'
 import { LoginPage } from '../pages/Login'
@@ -34,6 +35,8 @@ export const RoutesName: {
     machines: string
     products: string
     singleProduct: string
+    collections: string
+    singleCollection: string
 } = {
     login: '/',
     forgotPassword: '/forgot-password',
@@ -50,6 +53,8 @@ export const RoutesName: {
     singleMachine: '/machine-info',
     products: '/products',
     singleProduct: '/single-product',
+    collections: '/collections',
+    singleCollection: '/single-collection',
 }
 
 export function Routes() {
@@ -144,6 +149,18 @@ export function Routes() {
                 isPrivate
                 exact
                 component={ProductPage}
+            />
+            <Route
+                path={RoutesName.collections}
+                isPrivate
+                exact
+                component={CollectionsPage}
+            />
+            <Route
+                path={RoutesName.singleCollection}
+                isPrivate
+                exact
+                component={CollectionInfoPage}
             />
         </Switch>
     )

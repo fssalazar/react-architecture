@@ -54,7 +54,7 @@ export default createGlobalStyle`
 
   body{
     -webkit-font-smoothing: antialiased;
-    background-color: var(--color-background);
+    background-color: #fff;
   }
 
   body, input, button, h1, h2, h3, h4, p, tr, th, a, span{
@@ -104,6 +104,11 @@ export default createGlobalStyle`
   .f14-700-dark {
     color: var(--color-dark);
     font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .f24-700-dark-gray {
+    color: #34303E;
+    font-size: 2.4rem;
     font-weight: 700;
   }
   .f14-700-light {

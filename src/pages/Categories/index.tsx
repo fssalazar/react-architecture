@@ -11,7 +11,7 @@ import { SelectInput } from '../../components/SelectInput'
 import { SimpleInput } from '../../components/SimpleInput'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
-import { Box, Category } from '../../entities/category'
+import { Box, Category, CategoryType } from '../../entities/category'
 import { useCategory } from '../../hooks/useCategory'
 import { CreateCategory } from '../../modals/CreateCategory'
 import { CategoriesContent } from './styles'
@@ -242,24 +242,12 @@ export function CategoriesPage() {
                                                 type="checkbox"
                                                 id="sharedStock"
                                                 checked={
-                                                    selectedCategory.sharedSupply
+                                                    selectedCategory.type ===
+                                                    CategoryType.MULTIPLE_BOXES_SINGLE_STOCK
                                                 }
                                                 disabled
                                             />
                                             Estoque compartilhado
-                                        </label>
-                                    </div>
-                                    <div className="shared-stock">
-                                        <label htmlFor="sharedVault">
-                                            <input
-                                                type="checkbox"
-                                                id="sharedVault"
-                                                checked={
-                                                    selectedCategory.sharedVault
-                                                }
-                                                disabled
-                                            />
-                                            Cofre compartilhado
                                         </label>
                                     </div>
                                 </div>

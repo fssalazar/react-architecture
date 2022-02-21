@@ -1,5 +1,8 @@
+import { CategoryType } from '../entities/category'
+
 export interface CreateCategoryDto {
     label: string
+    type: CategoryType
     boxes: {
         label: string
         counters: {
@@ -9,6 +12,4 @@ export interface CreateCategoryDto {
             isMechanical: boolean
         }[]
     }[]
-    sharedSupply: boolean
-    sharedVault: boolean
 }

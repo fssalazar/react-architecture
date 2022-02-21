@@ -1,27 +1,18 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable no-param-reassign */
-import React, { useEffect, useState } from 'react'
-import { FiSearch } from 'react-icons/fi'
+import React, { useState } from 'react'
 import { Pagination } from '@material-ui/lab'
-import { v4 } from 'uuid'
-import { SimpleInput } from '../../components/SimpleInput'
+import { FiSearch } from 'react-icons/fi'
 import { SmallSelectInput } from '../../components/SmallSelectInput'
 import { MainContainer } from '../../container/MainContainer'
 import { RoutesName } from '../../routes'
-import { PaginationContent } from '../../utils/SharedStyles'
-import { PaginationContainer, MachineContainer } from './styles'
 import { Table } from '../../utils/Table'
-import { HandleMachine } from '../../modals/HandleMachine'
-import { SingleMachine } from '../../components/SingleMachine'
-import { useMachine } from '../../hooks/use-machine'
+import { PaginationContainer } from '../Users/styles'
+import { PaginationContent } from '../../utils/SharedStyles'
+import { SimpleInput } from '../../components/SimpleInput'
+import { CollectionsContainer } from './styles'
+import { SingleCollection } from '../../components/SingleCollection'
 
-export function MachinesPage() {
-    // hooks
-    const { getMachines, machines, count } = useMachine()
+export function CollectionsPage() {
     // state
-    const [openCreateNewMachine, setOpenCreateNewMachine] = useState(false)
     const [busy, setBusy] = useState(false)
     const [limit, setLimit] = useState<{ label: string; value: number }>({
         label: '10',
@@ -29,39 +20,26 @@ export function MachinesPage() {
     })
     const [searchString, setSearchString] = useState<string>()
     const [pageSelected, setPageSelected] = useState<number>(1)
+    const count = 10
 
     function numberOfPages(countNum: number) {
         return Math.ceil(countNum / limit.value)
     }
 
-    useEffect(() => {
-        setBusy(true)
-        ;(async () => {
-            getMachines(
-                limit.value,
-                pageSelected * limit.value - limit.value,
-                searchString === '' ? undefined : searchString
-            )
-            setBusy(false)
-        })()
-    }, [limit, pageSelected, searchString])
-
     return (
         <MainContainer
-            path={[{ label: 'Máquinas', path: RoutesName.pointsOfSale }]}
-            title="Máquinas"
-            active="machines"
+            path={[{ label: 'Coletas', path: RoutesName.collections }]}
+            title="Coletas"
+            active="collections"
             busy={busy}
-            btnLabel="Criar máquina"
-            callback={() => setOpenCreateNewMachine(true)}
         >
-            <MachineContainer>
+            <CollectionsContainer>
                 <div className="filters">
                     <SimpleInput
                         name="point-filter"
                         label="Busca rápida"
                         icon={FiSearch}
-                        onChange={(e) => {
+                        onChange={(e: any) => {
                             setSearchString(e.target.value)
                             setPageSelected(1)
                         }}
@@ -135,22 +113,19 @@ export function MachinesPage() {
                         className="table-header"
                         style={{
                             gridTemplateColumns:
-                                '1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 0.5fr',
+                                '1fr 1fr 1fr 1fr 2fr 2fr 2fr 0.5fr',
                         }}
                     >
-                        <h1>Num. série</h1>
-                        <h1>Modelos</h1>
-                        <h1>Telemetria</h1>
-                        <h1>Operador</h1>
-                        <h1>Ponto de Venda</h1>
-                        <button type="button">Última coleta</button>
-                        <button type="button">Coletável</button>
-                        <button type="button">Estoque</button>
-                        <h1>Status</h1>
+                        <h1>Id No.</h1>
+                        <h1>Tipo</h1>
+                        <h1>Máquina</h1>
+                        <h1>Modelo</h1>
+                        <h1>Usuário</h1>
+                        <h1>PDV</h1>
+                        <h1>Data</h1>
+                        <h1>Revisada</h1>
                     </div>
-                    {machines.map((machine) => {
-                        return <SingleMachine key={v4()} machine={machine} />
-                    })}
+                    <SingleCollection />
                 </Table>
                 <PaginationContent>
                     <div className="results">
@@ -189,7 +164,7 @@ export function MachinesPage() {
                                     { label: '50', value: 50 },
                                     { label: '100', value: 100 },
                                 ]}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     if (e) {
                                         setLimit({
                                             label: e.label,
@@ -201,12 +176,7 @@ export function MachinesPage() {
                         </div>
                     </div>
                 </PaginationContent>
-            </MachineContainer>
-
-            <HandleMachine
-                isOpen={openCreateNewMachine}
-                onRequestClose={() => setOpenCreateNewMachine(false)}
-            />
+            </CollectionsContainer>
         </MainContainer>
     )
 }

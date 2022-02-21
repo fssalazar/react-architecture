@@ -19,6 +19,7 @@ import CheckImg from '../../assets/check.svg'
 import { CreateCategoryDto } from '../../dtos/createCategory'
 import { SelectInput } from '../../components/SelectInput'
 import { useCategory } from '../../hooks/useCategory'
+import { CategoryType } from '../../entities/category'
 
 interface Props {
     isOpen: boolean
@@ -113,11 +114,10 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     setTypeChosen('GRUA')
                                     setCategory({
                                         label: '',
-                                        sharedSupply: false,
-                                        sharedVault: false,
+                                        type: CategoryType.SINGLE_BOX_SINGLE_STOCK,
                                         boxes: [
                                             {
-                                                label: `Cabine ${category?.boxes.length}`,
+                                                label: '',
                                                 counters: [
                                                     {
                                                         isDigital: true,
@@ -208,11 +208,10 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     setTypeChosen('NO_OUT')
                                     setCategory({
                                         label: '',
-                                        sharedSupply: false,
-                                        sharedVault: false,
+                                        type: CategoryType.NO_PRIZE,
                                         boxes: [
                                             {
-                                                label: `Cabine ${category?.boxes.length}`,
+                                                label: '',
                                                 counters: [
                                                     {
                                                         isDigital: true,
@@ -257,7 +256,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                         sharedVault: false,
                                         boxes: [
                                             {
-                                                label: `Cabine ${category?.boxes.length}`,
+                                                label: '',
                                                 counters: [
                                                     {
                                                         isDigital: true,
@@ -404,9 +403,8 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                                 }
                                                 state = {
                                                     label: '',
-                                                    sharedSupply: false,
-                                                    sharedVault: false,
                                                     boxes,
+                                                    type: CategoryType.MULTIPLE_BOXES_MULTIPLE_STOCKS,
                                                 }
                                                 return { ...state }
                                             })
@@ -435,7 +433,6 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                         if (e) {
                                             setCategory((state) => {
                                                 const counters = []
-
                                                 counters.push({
                                                     isDigital: true,
                                                     isMechanical: true,
@@ -466,8 +463,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                                 }
                                                 state = {
                                                     label: '',
-                                                    sharedSupply: true,
-                                                    sharedVault: false,
+                                                    type: CategoryType.SINGLE_BOX_MULTIPLE_STOCKS,
                                                     boxes: [
                                                         {
                                                             label: `Cabine ${state?.boxes.length}`,
@@ -512,9 +508,29 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                             )}
                                             <div className="header">
                                                 <div className="title">
-                                                    <h1 className="f16-700-dark">
-                                                        {`${index + 1}. Cabine`}
-                                                    </h1>
+                                                    <SimpleInput
+                                                        name={`box${index + 1}`}
+                                                        label={`Cabine ${
+                                                            index + 1
+                                                        }`}
+                                                        onChange={(e: any) => {
+                                                            if (e) {
+                                                                setCategory(
+                                                                    (state) => {
+                                                                        if (
+                                                                            state
+                                                                        ) {
+                                                                            state.boxes[
+                                                                                index
+                                                                            ].label =
+                                                                                e.target.value.toString()
+                                                                        }
+                                                                        return state
+                                                                    }
+                                                                )
+                                                            }
+                                                        }}
+                                                    />
                                                 </div>
                                                 <button type="button">
                                                     <RiArrowUpSLine />
@@ -777,7 +793,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                                 setCategory((state) => {
                                                     state = category
                                                     state.boxes.push({
-                                                        label: `Cabine ${category?.boxes.length}`,
+                                                        label: '',
                                                         counters: [
                                                             {
                                                                 isDigital: true,
@@ -846,20 +862,38 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                         text="Próximo"
                                         onClick={() => {
                                             let shouldStepThree = true
-                                            category?.boxes.forEach((box) => {
-                                                box.counters.forEach(
-                                                    (counter) => {
-                                                        if (
-                                                            counter.counterTypeId ===
-                                                                '' ||
-                                                            counter.pin === 0
-                                                        ) {
-                                                            shouldStepThree =
-                                                                false
-                                                        }
+                                            category?.boxes.forEach(
+                                                (box, index) => {
+                                                    if (
+                                                        box.label === '' ||
+                                                        box.label === undefined
+                                                    ) {
+                                                        setCategory((state) => {
+                                                            if (state) {
+                                                                state.boxes[
+                                                                    index
+                                                                ].label = `Cabine ${
+                                                                    index + 1
+                                                                }`
+                                                            }
+                                                            return state
+                                                        })
                                                     }
-                                                )
-                                            })
+                                                    box.counters.forEach(
+                                                        (counter) => {
+                                                            if (
+                                                                counter.counterTypeId ===
+                                                                    '' ||
+                                                                counter.pin ===
+                                                                    0
+                                                            ) {
+                                                                shouldStepThree =
+                                                                    false
+                                                            }
+                                                        }
+                                                    )
+                                                }
+                                            )
                                             if (shouldStepThree) {
                                                 setStep('THREE')
                                             } else {
@@ -890,16 +924,25 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                 <input
                                     type="checkbox"
                                     id="sharedSupply"
-                                    checked={category.sharedSupply}
+                                    checked={
+                                        category.type ===
+                                        CategoryType.MULTIPLE_BOXES_SINGLE_STOCK
+                                    }
                                     disabled={
                                         typeChosen === 'GRUA' ||
                                         (typeChosen === 'MULTI_STOCKS' && true)
                                     }
                                     onChange={(e) => {
                                         setCategory((state) => {
+                                            if (
+                                                state?.type ===
+                                                CategoryType.MULTIPLE_BOXES_MULTIPLE_STOCKS
+                                            ) {
+                                                state.type =
+                                                    CategoryType.MULTIPLE_BOXES_SINGLE_STOCK
+                                            }
                                             state = category
-                                            state.sharedSupply =
-                                                e.target.checked
+
                                             return { ...state }
                                         })
                                     }}
@@ -913,23 +956,32 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                 <input
                                     type="checkbox"
                                     id="unSharedSupply"
-                                    checked={!category.sharedSupply}
+                                    checked={
+                                        category.type !==
+                                        CategoryType.MULTIPLE_BOXES_SINGLE_STOCK
+                                    }
                                     disabled={
                                         typeChosen === 'GRUA' ||
                                         (typeChosen === 'MULTI_STOCKS' && true)
                                     }
                                     onChange={(e) => {
                                         setCategory((state) => {
+                                            if (
+                                                state?.type ===
+                                                CategoryType.MULTIPLE_BOXES_SINGLE_STOCK
+                                            ) {
+                                                state.type =
+                                                    CategoryType.MULTIPLE_BOXES_MULTIPLE_STOCKS
+                                            }
                                             state = category
-                                            state.sharedSupply =
-                                                !e.target.checked
+
                                             return { ...state }
                                         })
                                     }}
                                 />
                             </label>
                         </div>
-                        <h1 className="f16-700-primary-dark">
+                        {/* <h1 className="f16-700-primary-dark">
                             A máquina possui cofres separados por cabine?
                         </h1>
                         <div className="action-config">
@@ -972,7 +1024,7 @@ export function CreateCategory({ isOpen, onRequestClose }: Props) {
                                     }}
                                 />
                             </label>
-                        </div>
+                        </div> */}
                         <div className="action-btns">
                             <Button
                                 type="button"
