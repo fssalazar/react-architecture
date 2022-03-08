@@ -14,7 +14,6 @@ import {
     CollectionTable,
     GeneralInformarionContainer,
 } from './styles'
-import green from '../../assets/green.png'
 import iconOne from '../../assets/collection/Icon.png'
 import iconTwo from '../../assets/collection/Icon-1.png'
 import iconThree from '../../assets/collection/Icon-2.png'
@@ -23,6 +22,9 @@ import iconFive from '../../assets/collection/Icon-4.png'
 import iconSix from '../../assets/collection/Icon-5.png'
 import iconSeven from '../../assets/collection/Icon-6.png'
 import iconEight from '../../assets/collection/Icon-7.png'
+import info from '../../assets/collection/info.png'
+
+import { ReviewCollection } from '../../modals/ReviewCollection'
 
 export function CollectionInfoPage() {
     const params = window.location.search.split('?')[1]
@@ -121,6 +123,11 @@ export function CollectionInfoPage() {
                                 <div className="object-info">
                                     <p className="f14-700-gray">R$ 10,00</p>
                                 </div>
+                            </div>
+                            {/* Days withou operation */}
+                            <div className="days-without-operation">
+                                <img src={info} alt="info" />
+                                <h2>Esta máquina ficou 4 dias sem operar.</h2>
                             </div>
                         </div>
 
@@ -528,6 +535,10 @@ export function CollectionInfoPage() {
                     </h2>
                 </div>
             </CollectionInfoContainer>
+            <ReviewCollection
+                isOpen={openReviewCollection}
+                onRequestClose={() => setOpenReviewCollection(false)}
+            />
         </MainContainer>
     )
 }

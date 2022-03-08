@@ -65,6 +65,21 @@ export const GeneralInformarionContainer = styled.div`
                     }
                 }
             }
+            .days-without-operation {
+                width: 100%;
+                padding: 1rem 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #fff8dd;
+                border-radius: 18px;
+                h2 {
+                    margin-left: 1rem;
+                    color: #4a4754;
+                    font-weight: 700;
+                    font-size: 1.8rem;
+                }
+            }
         }
         .machine-info {
             padding: 0 4rem;
